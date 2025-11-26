@@ -192,3 +192,11 @@ Later spec versions can define **standard transform profiles**, e.g.:
 * `AGF-STFT-192k-v1` - for extended ultrasonic capture
 * `AGF-WAVELET-SONAR-v1` - for sonar / whale song work
 * `AGF-WAVELET-SIEZEMIC-v1` - for siezemic data
+
+---
+
+#### Authorship and AI-Assistance Disclosure
+
+Portions of this specification were drafted or refined using AI-assisted writing tools. These tools were employed to improve clarity, organization, and completeness in the presentation of ideas. The underlying concepts, design decisions, and direction of the AuralGlyph format originate with the project’s author, who reviewed and approved all final content.
+
+This disclosure is provided to ensure transparency in the development of the specification.
