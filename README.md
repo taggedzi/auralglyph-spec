@@ -55,9 +55,9 @@ $$
 
 Where:
 
-- **b** — band index (infra / human / ultra / custom)  
-- **t** — time frame index  
-- **f** — frequency bin index  
+- **b** - band index (infra / human / ultra / custom)  
+- **t** - time frame index  
+- **f** - frequency bin index  
 - Each value is a **complex coefficient** (magnitude + phase)
 
 This single data structure is the *official* representation of the signal.  
@@ -128,7 +128,7 @@ This repository contains:
 - Planned transform profiles  
 - Placeholder sections for future reference implementations  
 
-Nothing here is final yet — expect rapid iteration and breaking changes.
+Nothing here is final yet - expect rapid iteration and breaking changes.
 
 ---
 
@@ -153,7 +153,7 @@ auralglyph-spec/
 
 ## 🗺 Roadmap
 
-### **Phase 1 — Core Specification**
+### **Phase 1 - Core Specification**
 
 - [ ] Canonical Audio Surface formal definition  
 - [ ] Band profiles (infra/human/ultra)  
@@ -161,26 +161,27 @@ auralglyph-spec/
 - [ ] Metadata schema  
 - [ ] Container structure  
 
-### **Phase 2 — Visualization Guidelines**
+### **Phase 2 - Visualization Guidelines**
 
 - [ ] Linear spectrogram view  
 - [ ] Spiral & cylindrical projections  
 - [ ] Hilbert curve view  
 - [ ] Multi-scale / overview modes  
 
-### **Phase 3 — Reference Implementations**
+### **Phase 3 - Reference Implementations**
 
 - [ ] Python encoder (CAS ← audio)  
 - [ ] Python decoder (audio ← CAS)  
 - [ ] CAS visualizer (various projection modes)  
 
-### **Phase 4 — Real-World Applications**
+### **Phase 4 - Real-World Applications**
 
 - [ ] Music encoding  
 - [ ] Bioacoustic datasets  
 - [ ] Sonar logs  
 - [ ] Machine learning integration  
-- [ ] Scientific datasets  
+- [ ] Scientific datasets
+- [ ] Seismic data
 
 ---
 
@@ -194,7 +195,7 @@ If you want to participate in spec design, feel free to open an issue or discuss
 
 ## 📜 License
 
-
+[CC-BY-4.0](LICENSE)
 
 ---
 
@@ -205,5 +206,5 @@ AuralGlyph reimagines what a “signal file format” can be:
 - not just for **listening**,  
 - not just for **visualization**,  
 - not just for **analysis**,  
-but a single, unified medium that encodes the *full shape* of sound and other time–frequency signals —  
+but a single, unified medium that encodes the *full shape* of sound and other time–frequency signals -  
 in a form that is both **human-visible** and **machine-reversible**.

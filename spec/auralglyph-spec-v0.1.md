@@ -1,4 +1,4 @@
-### AuralGlyph Specification — Draft v0.1
+### AuralGlyph Specification - Draft v0.1
 
 **Status:** Experimental draft
 **Authors:** taggedzi
@@ -84,17 +84,17 @@ $$
 
 Where:
 
-* ( b ) — **band index**
+* ( b ) - **band index**
 
   * Integer in ([0, B-1]), where ( B ) is the number of frequency bands.
   * Each band has a defined frequency range and resolution.
 
-* ( t ) — **time frame index**
+* ( t ) - **time frame index**
 
   * Integer in ([0, T-1]), where ( T ) is the number of time frames.
   * Each frame corresponds to a time interval (e.g., STFT hop).
 
-* ( f ) — **frequency bin index**
+* ( f ) - **frequency bin index**
 
   * Integer in ([0, F_b-1]), where ( F_b ) is the number of frequency bins in band ( b ).
 
@@ -188,7 +188,7 @@ Transform choice affects:
 
 Later spec versions can define **standard transform profiles**, e.g.:
 
-* `AGF-STFT-48k-v1` — standardized STFT config for 48 kHz audio
-* `AGF-STFT-192k-v1` — for extended ultrasonic capture
-* `AGF-WAVELET-SONAR-v1` — for sonar / whale song work
+* `AGF-STFT-48k-v1` - standardized STFT config for 48 kHz audio
+* `AGF-STFT-192k-v1` - for extended ultrasonic capture
+* `AGF-WAVELET-SONAR-v1` - for sonar / whale song work
 * `AGF-WAVELET-SIEZEMIC-v1` - for siezemic data
