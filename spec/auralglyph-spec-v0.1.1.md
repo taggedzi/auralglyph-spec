@@ -1,4 +1,4 @@
-### AuralGlyph Specification - Draft v0.1
+### AuralGlyph Specification - Draft v0.1.1
 
 **Status:** Experimental draft
 **Authors:** taggedzi
