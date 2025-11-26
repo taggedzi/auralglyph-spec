@@ -28,6 +28,14 @@ AuralGlyph bridges the gap between:
 
 ---
 
+## Design principle (v0.1)
+
+In this version of the specification, a CAS instance is intended to represent one scalar-valued signal from one physical or logical sensor. Multi-sensor or multi-component setups SHOULD be modeled as collections of CAS instances, with their relationships defined at the container or session level.
+
+Future revisions MAY introduce aggregate types or profiles that allow vector-valued signals, without changing the semantics of existing scalar CAS instances.
+
+---
+
 ## Why AuralGlyph?
 
 Existing audio formats store signals as waveforms (time-domain PCM) or psychoacoustic encodings (MP3, AAC).  
