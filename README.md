@@ -208,3 +208,16 @@ AuralGlyph reimagines what a “signal file format” can be:
 - not just for **analysis**,  
 but a single, unified medium that encodes the *full shape* of sound and other time–frequency signals -  
 in a form that is both **human-visible** and **machine-reversible**.
+
+---
+
+## AI-Assisted Development Notice
+
+Portions of this project’s early documentation and conceptual development were created with the assistance of AI tools. These tools helped refine ideas, expand technical discussions, organize drafts, and accelerate the writing process.
+
+The core concept, goals, and architectural direction of AuralGlyph originate with the project’s creator.
+AI was used as a collaborative tool - similar to a technical editor - to explore alternatives, clarify reasoning, and improve structure and consistency.
+
+All final decisions, interpretations, and design choices were made by the project founder.
+
+AI involvement is disclosed for transparency, and to ensure contributors understand that while AI participated in the drafting process, the creative and conceptual ownership of AuralGlyph remains firmly human-directed.
