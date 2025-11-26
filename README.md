@@ -163,7 +163,7 @@ auralglyph-spec/
 
 ### **Phase 1 - Core Specification**
 
-- [ ] Canonical Audio Surface formal definition  
+- [x] Canonical Audio Surface formal definition  
 - [ ] Band profiles (infra/human/ultra)  
 - [ ] Transform requirements (STFT baseline)  
 - [ ] Metadata schema  
