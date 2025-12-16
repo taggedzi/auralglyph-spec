@@ -45,7 +45,7 @@ This specification uses the following terms:
   Any real-valued, time-varying phenomenon that can be sampled, such as sound pressure, acceleration, electric field strength, etc.
 
 * **Time-domain signal**
-  A 1D sequence of samples $ x[n] $ representing a signal over time at a given sample rate.
+  A 1D sequence of samples $`x[n]`$ representing a signal over time at a given sample rate.
 
 * **Continuous-time vs. discrete-time**
   AuralGlyph operates on **discrete-time** sampled signals (e.g., 48 kHz PCM). References to continuous-time are conceptual.
@@ -108,42 +108,42 @@ A CAS instance is defined over three discrete index sets:
 
 - Band index set  
   ```math
-  \mathcal{B} = \{ 0, 1, \dots, B-1 \}
-  where \(B \in \mathbb{N}_{>0}\) is the number of bands.
+  B = { 0, 1, ..., B-1 }
   ```
+  where $`B \in N_{>0}`$ is the number of bands.
 
 - Time-frame index set  
-  \[
-  \mathcal{T} = \{ 0, 1, \dots, T-1 \}
-  \]
-  where \(T \in \mathbb{N}_{>0}\) is the number of time frames.
+  ```math
+  T = { 0, 1, ..., T-1 }
+  ```
+  where $`T \in N_{>0}`$ is the number of time frames.
 
 - Per-band frequency index sets  
-  For each band \(b \in \mathcal{B}\),
-  \[
-  \mathcal{F}_b = \{ 0, 1, \dots, F_b - 1 \}
-  \]
-  where \(F_b \in \mathbb{N}_{>0}\) is the number of frequency bins in band \(b\).
+  For each band $`b \in B`$,
+  ```math
+  F_b = { 0, 1, ..., F_b - 1 }
+  ```
+  where $`F_b \in N_{>0}`$ is the number of frequency bins in band $`b`$.
 
 The CAS coefficients are complex values
-\[
-C_b[t, f] \in \mathbb{C}
-\]
-defined for all \(b \in \mathcal{B}\), \(t \in \mathcal{T}\), and \(f \in \mathcal{F}_b\).
+```math
+C_b[t, f] \in C
+```
+defined for all $`b \in B`$, $`t \in T`$, and $`f \in F_b`$.
 
 Equivalently, one may view CAS as a ragged 3D tensor
-\[
+```math
 C[b, t, f]
-\]
+```
 with a band-dependent frequency dimension. The representation details (e.g., packed tensor vs. per-band matrices) are container-specific and non-normative; the abstract model above is normative.
 
 Each complex coefficient MAY be interpreted as:
 
-- magnitude–phase: \(|C_b[t, f]|, \arg C_b[t, f]\), or
-- real–imaginary: \(\Re C_b[t, f], \Im C_b[t, f]\).
+- magnitude–phase: $`|C_b[t, f]|, \arg C_b[t, f]`$, or
+- real–imaginary: $`ℝ C_b[t, f], \Im C_b[t, f]`$.
 
 > **Normative requirement:**  
-> Every AuralGlyph container MUST unambiguously specify which representation (real/imag or mag/phase) is used for stored coefficients and how to convert them into \(\mathbb{C}\).
+> Every AuralGlyph container MUST unambiguously specify which representation (real/imag or mag/phase) is used for stored coefficients and how to convert them into $`C`$.
 
 See §3.5 for required metadata fields corresponding to these index sets.
 
@@ -153,27 +153,27 @@ See §3.5 for required metadata fields corresponding to these index sets.
 
 All bands share a single, synchronized time axis. Let:
 
-- \(f_s\) denote the sample rate in Hz of the underlying time-domain signal.
-- \(H\) denote the hop length in samples between successive analysis frames.
-- \(N\) denote the analysis window length in samples.
+- $`f_s`$ denote the sample rate in Hz of the underlying time-domain signal.
+- $`H`$ denote the hop length in samples between successive analysis frames.
+- $`N`$ denote the analysis window length in samples.
 
 These parameters MUST be recorded in CAS metadata.
 
-The analysis frame \(t \in \mathcal{T}\) corresponds to a time interval in the original signal. The nominal center time (in seconds) of frame \(t\) is:
+The analysis frame $`t \in T`$ corresponds to a time interval in the original signal. The nominal center time (in seconds) of frame $`t`$ is:
 
-\[
-t_{\mathrm{sec}}(t) = \frac{t \cdot H}{f_s}.
-\]
+```math
+t_{sec}(t) = \frac{t \cdot H}{f_s}.
+```
 
 > **Normative requirements:**
 >
-> 1. The time-frame index set \(\mathcal{T}\) MUST be strictly ordered and contiguous starting at 0.  
-> 2. All bands MUST use the same \(\mathcal{T}\), i.e., the same hop length and frame count \(T\).  
+> 1. The time-frame index set $`T`$ MUST be strictly ordered and contiguous starting at 0.  
+> 2. All bands MUST use the same $`T`$, i.e., the same hop length and frame count $`T`$.  
 > 3. The CAS metadata MUST include at least:
->    - `sample_rate_hz` \(= f_s\)
->    - `analysis_window_length_samples` \(= N\)
->    - `hop_length_samples` \(= H\)
->    - `num_frames` which MUST equal the cardinality of the time-frame index set \( |\mathcal{T}| = T \).
+>    - `sample_rate_hz` $`= f_s`$
+>    - `analysis_window_length_samples` $`= N`$
+>    - `hop_length_samples` $`= H`$
+>    - `num_frames` which MUST equal the cardinality of the time-frame index set $`|T| = T`$.
 
 The exact choice of window function and its parameters (e.g., Hann, Blackman, custom) MUST also be recorded as part of the transform specification (see §4).
 
@@ -183,24 +183,24 @@ See §3.5 for fields that define the time axis in container metadata.
 
 ##### 3.3 Frequency Axis and Band Configuration
 
-Each band \(b \in \mathcal{B}\) is defined by a **band configuration** that maps its discrete frequency indices to physical frequencies in Hz.
+Each band $`b \in B`$ is defined by a **band configuration** that maps its discrete frequency indices to physical frequencies in Hz.
 
-For band \(b\), define a mapping:
+For band $`b`$, define a mapping:
 
-\[
-\phi_b : \mathcal{F}_b \rightarrow \mathbb{R}_{\ge 0}
-\]
+```math
+φ_b : F_b → R_{\ge 0}
+```
 
-such that \(\phi_b(f)\) yields the center frequency (in Hz) associated with bin \(f\).
+such that $`φ_b(f)`$ yields the center frequency (in Hz) associated with bin $`f`$.
 
 The band configuration MUST specify, at minimum:
 
-- `band_index` — integer \(b \in \mathcal{B}\).
+- `band_index` — integer $`b \in B`$.
 - `band_name` — human-readable identifier (e.g., `"infra"`, `"human"`, `"ultra"`, `"custom-1"`).
 - `f_min_hz` — minimum frequency covered by the band (inclusive or approximate).
 - `f_max_hz` — maximum frequency covered by the band (inclusive or approximate).
-- `num_bins` — \(F_b\).
-- `bin_layout` — description of the mapping \(\phi_b\), such as:
+- `num_bins` — $`F_b`$.
+- `bin_layout` — description of the mapping $`φ_b`$, such as:
   - `"linear-hz"` (approximately uniform spacing in Hz),
   - `"log10-hz"`, `"mel"`, `"bark"`,
   - or `"custom:<profile-id>"`.
@@ -209,7 +209,7 @@ The band configuration MUST specify, at minimum:
 When `bin_layout` is `"custom:<profile-id>"`, the spec or profile MUST define:
 
 - whether bins are defined by centers, edges, or a parametric mapping,
-- how to compute \(\phi_b(f)\) for any integer \(f \in \mathcal{F}_b\).
+- how to compute $`φ_b(f)`$ for any integer $`f \in F_b`$.
 
 > **Normative requirements:**
 >
@@ -229,15 +229,15 @@ Band configuration metadata fields are defined in §3.5 under “Per-band fields
 
 ##### 3.4 Transform Relationship
 
-Conceptually, CAS coefficients are produced by applying an analysis transform \(\mathcal{T}\) to a time-domain signal \(x[n]\):
+Conceptually, CAS coefficients are produced by applying an analysis transform $`T`$ to a time-domain signal $`x[n]`$:
 
-\[
-C_b[t, f] = \mathcal{T}_b(x)[t, f]
-\]
+```math
+C_b[t, f] = T_b(x)[t, f]
+```
 
-for each reconstructable band \(b\).
+for each reconstructable band $`b`$.
 
-An inverse transform \(\mathcal{T}^{-1}\) produces an approximate or exact time-domain reconstruction \(\hat{x}[n]\) from the CAS coefficients of all reconstructable bands.
+An inverse transform $`T^{-1}`$ produces an approximate or exact time-domain reconstruction $`\hat{x}[n]`$ from the CAS coefficients of all reconstructable bands.
 
 > **Normative requirements:**
 >
@@ -255,10 +255,10 @@ A CAS instance MUST be accompanied by a metadata structure with at least the fol
 - **Global CAS fields**
   - `cas_version` — semantic version of the CAS spec (e.g., `"0.1.0"`).
   - `signal_domain` — descriptive string (e.g., `"acoustic-pressure"`, `"acceleration"`, `"rf-downconverted"`, `"seismic-displacement"`).
-  - `sample_rate_hz` — \(f_s\).
-  - `num_frames` — \(T\).
-  - `analysis_window_length_samples` — \(N\).
-  - `hop_length_samples` — \(H\).
+  - `sample_rate_hz` — $`f_s`$.
+  - `num_frames` — $`T`$.
+  - `analysis_window_length_samples` — $`N`$.
+  - `hop_length_samples` — $`H`$.
   - `transform_type` — see §4.
   - `transform_profile_id` — optional identifier of a standard transform profile (e.g., `"AGF-STFT-48k-v1"`).
 
@@ -294,15 +294,15 @@ A CAS instance MUST be accompanied by a metadata structure with at least the fol
   - `frame_zero_time_offset_sec` — the offset (in seconds) of frame `t = 0` relative to the time reference.
   - `time_sync_quality` — qualitative or numeric measure of synchronization quality (e.g., `"gps-disciplined"`, `"ntp-synced"`, `"free-running"`, or a profile-defined structure).
 
-- **Per-band fields (for each \(b \in \mathcal{B}\))**
+- **Per-band fields (for each $`b \in B`$)**
   - `band_index`
   - `band_name`
   - `f_min_hz`
   - `f_max_hz`
-  - `num_bins` (\(F_b\))
+  - `num_bins` ($`F_b`$)
   - `bin_layout`
   - `reconstructable` (bool)
-  - `bin_mapping_params` — optional structure containing parameters required to compute \(\phi_b\) (e.g., start frequency, spacing, log base).
+  - `bin_mapping_params` — optional structure containing parameters required to compute $`φ_b`$ (e.g., start frequency, spacing, log base).
 
 - **Coefficient representation fields**
   - `coefficient_encoding` — one of:
@@ -325,9 +325,9 @@ A CAS instance MUST be accompanied by a metadata structure with at least the fol
 
 A CAS instance is the canonical representation of the signal in AuralGlyph. Any visualization or projection (“view”) — such as a rectangular spectrogram, spiral representation, cylindrical plot, Hilbert curve mapping, or custom artwork — MUST be defined as a mapping:
 
-\[
-\mathcal{P} : \{C_b[t, f]\} \rightarrow \text{image(s) or geometry}
-\]
+```math
+P : \{C_b[t, f]\} → \text{image(s) or geometry}
+```
 
 that does **not** modify the underlying CAS coefficients.
 
@@ -380,15 +380,15 @@ In such cases, a system SHOULD:
 
 AuralGlyph does not hard-code a single transform (like “must be STFT”), but it **does** require:
 
-* A well-defined analysis transform $ \mathcal{T} $ mapping time-domain signals to CAS:
-  $$
-  C = \mathcal{T}(x)
-  $$
+* A well-defined analysis transform $`T`$ mapping time-domain signals to CAS:
+  ```math
+  C = T(x)
+  ```
 
-* A corresponding inverse transform $ \mathcal{T}^{-1} $ (for applicable bands) that approximately or exactly reconstructs the time-domain signal:
-  $$
-  \hat{x} = \mathcal{T}^{-1}(C)
-  $$
+* A corresponding inverse transform $`T^{-1}`$ (for applicable bands) that approximately or exactly reconstructs the time-domain signal:
+  ```math
+  \hat{x} = T^{-1}(C)
+  ```
 
 Implementations MUST declare:
 
