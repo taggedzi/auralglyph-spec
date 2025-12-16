@@ -381,14 +381,14 @@ In such cases, a system SHOULD:
 AuralGlyph does not hard-code a single transform (like “must be STFT”), but it **does** require:
 
 * A well-defined analysis transform $`T`$ mapping time-domain signals to CAS:
-  ```math
-  C = T(x)
-  ```
+```math
+C = T(x)
+```
 
 * A corresponding inverse transform $`T^{-1}`$ (for applicable bands) that approximately or exactly reconstructs the time-domain signal:
-  ```math
-  \hat{x} = T^{-1}(C)
-  ```
+```math
+\hat{x} = T^{-1}(C)
+```
 
 Implementations MUST declare:
 
