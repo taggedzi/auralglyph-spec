@@ -110,26 +110,26 @@ A CAS instance is defined over three discrete index sets:
 ```math
 B = { 0, 1, ..., B-1 }
 ```
-  where $`B \in N_{>0}`$ is the number of bands.
+  where $`B ∈ N_{>0}`$ is the number of bands.
 
 - Time-frame index set  
 ```math
 T = { 0, 1, ..., T-1 }
 ```
-  where $`T \in N_{>0}`$ is the number of time frames.
+  where $`T ∈ N_{>0}`$ is the number of time frames.
 
 - Per-band frequency index sets  
-  For each band $`b \in B`$,
+  For each band $`b ∈ B`$,
 ```math
 F_b = { 0, 1, ..., F_b - 1 }
 ```
-  where $`F_b \in N_{>0}`$ is the number of frequency bins in band $`b`$.
+  where $`F_b ∈ N_{>0}`$ is the number of frequency bins in band $`b`$.
 
 The CAS coefficients are complex values
 ```math
-C_b[t, f] \in C
+C_b[t, f] ∈ C
 ```
-defined for all $`b \in B`$, $`t \in T`$, and $`f \in F_b`$.
+defined for all $`b ∈ B`$, $`t ∈ T`$, and $`f ∈ F_b`$.
 
 Equivalently, one may view CAS as a ragged 3D tensor
 ```math
@@ -140,7 +140,7 @@ with a band-dependent frequency dimension. The representation details (e.g., pac
 Each complex coefficient MAY be interpreted as:
 
 - magnitude–phase: $`|C_b[t, f]|, \arg C_b[t, f]`$, or
-- real–imaginary: $`ℝ C_b[t, f], \Im C_b[t, f]`$.
+- real–imaginary: $`\Re C_b[t, f], \Im C_b[t, f]`$.
 
 > **Normative requirement:**  
 > Every AuralGlyph container MUST unambiguously specify which representation (real/imag or mag/phase) is used for stored coefficients and how to convert them into $`C`$.
@@ -159,7 +159,7 @@ All bands share a single, synchronized time axis. Let:
 
 These parameters MUST be recorded in CAS metadata.
 
-The analysis frame $`t \in T`$ corresponds to a time interval in the original signal. The nominal center time (in seconds) of frame $`t`$ is:
+The analysis frame $`t ∈ T`$ corresponds to a time interval in the original signal. The nominal center time (in seconds) of frame $`t`$ is:
 
 ```math
 t_{sec}(t) = \frac{t \cdot H}{f_s}.
@@ -183,7 +183,7 @@ See §3.5 for fields that define the time axis in container metadata.
 
 ##### 3.3 Frequency Axis and Band Configuration
 
-Each band $`b \in B`$ is defined by a **band configuration** that maps its discrete frequency indices to physical frequencies in Hz.
+Each band $`b ∈ B`$ is defined by a **band configuration** that maps its discrete frequency indices to physical frequencies in Hz.
 
 For band $`b`$, define a mapping:
 
@@ -195,7 +195,7 @@ such that $`φ_b(f)`$ yields the center frequency (in Hz) associated with bin $`
 
 The band configuration MUST specify, at minimum:
 
-- `band_index` — integer $`b \in B`$.
+- `band_index` — integer $`b ∈ B`$.
 - `band_name` — human-readable identifier (e.g., `"infra"`, `"human"`, `"ultra"`, `"custom-1"`).
 - `f_min_hz` — minimum frequency covered by the band (inclusive or approximate).
 - `f_max_hz` — maximum frequency covered by the band (inclusive or approximate).
@@ -209,7 +209,7 @@ The band configuration MUST specify, at minimum:
 When `bin_layout` is `"custom:<profile-id>"`, the spec or profile MUST define:
 
 - whether bins are defined by centers, edges, or a parametric mapping,
-- how to compute $`φ_b(f)`$ for any integer $`f \in F_b`$.
+- how to compute $`φ_b(f)`$ for any integer $`f ∈ F_b`$.
 
 > **Normative requirements:**
 >
@@ -294,7 +294,7 @@ A CAS instance MUST be accompanied by a metadata structure with at least the fol
   - `frame_zero_time_offset_sec` — the offset (in seconds) of frame `t = 0` relative to the time reference.
   - `time_sync_quality` — qualitative or numeric measure of synchronization quality (e.g., `"gps-disciplined"`, `"ntp-synced"`, `"free-running"`, or a profile-defined structure).
 
-- **Per-band fields (for each $`b \in B`$)**
+- **Per-band fields (for each $`b ∈ B`$)**
   - `band_index`
   - `band_name`
   - `f_min_hz`
