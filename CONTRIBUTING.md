@@ -57,3 +57,81 @@ the project's open license.
 4. Open a pull request
 
 Thank you again for contributing to AuralGlyph!
+
+---
+
+### AuralGlyph Markdown Math & Notation Standard
+
+**Status:** Normative for all specification documents
+
+#### 1. Rendering Target
+
+All mathematical notation in AuralGlyph specifications MUST render correctly on **GitHub Markdown** using GitHub’s built-in MathJax support.
+
+---
+
+#### 2. Inline Mathematics
+
+Inline mathematical expressions MUST use the following form:
+
+```md
+$`expression`$
+```
+
+Examples:
+
+- $`x[n]`$
+- $`φ_b(f)`$
+- $`t ∈ T`$
+
+Other inline math delimiters (`$...$`, `\(...\)`) MUST NOT be used.
+
+---
+
+#### 3. Block Mathematics
+
+Multiline or displayed mathematics MUST be written using **fenced math blocks**:
+
+````md
+```math
+expression
+```
+````
+
+Rules:
+- Math fences MUST be **left-aligned**
+- Math fences MUST NOT be nested inside lists, blockquotes, or tables
+- `$$ ... $$`, `\[` `\]`, and similar delimiters MUST NOT be used
+
+---
+
+#### 4. Symbol Style
+Where possible, **UTF-8 mathematical symbols** SHOULD be used instead of LaTeX macros.
+
+Preferred examples:
+- `φ` instead of `\phi`
+- `→` instead of `\rightarrow`
+- `∈` instead of `\in`
+- `≥`, `≤` instead of `\ge`, `\le`
+- `ℝ`, `ℕ` instead of `\mathbb{R}`, `\mathbb{N}`
+
+---
+
+#### 5. LaTeX Macros
+LaTeX macros MAY be used **only when necessary** for structure, including:
+- Fractions: `\frac{a}{b}`
+- Subscripts / superscripts: `x_{b}`, `x^{n}`
+- Hats / accents: `\hat{x}`
+- Grouping: `{}`, `()`, `[]`
+
+Decorative or stylistic macros (`\mathcal`, `\dots`, `\mathrm`, etc.) MUST NOT be used.
+
+---
+
+#### 6. Readability Over Formalism
+The specification prioritizes:
+1. Correct GitHub rendering
+2. Human readability
+3. Copy-and-paste robustness
+
+Perfect typographic fidelity is explicitly **not** a goal.
