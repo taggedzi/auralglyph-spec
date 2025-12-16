@@ -107,22 +107,22 @@ A CAS instance consists of:
 A CAS instance is defined over three discrete index sets:
 
 - Band index set  
-  ```math
-  B = { 0, 1, ..., B-1 }
-  ```
+```math
+B = { 0, 1, ..., B-1 }
+```
   where $`B \in N_{>0}`$ is the number of bands.
 
 - Time-frame index set  
-  ```math
-  T = { 0, 1, ..., T-1 }
-  ```
+```math
+T = { 0, 1, ..., T-1 }
+```
   where $`T \in N_{>0}`$ is the number of time frames.
 
 - Per-band frequency index sets  
   For each band $`b \in B`$,
-  ```math
-  F_b = { 0, 1, ..., F_b - 1 }
-  ```
+```math
+F_b = { 0, 1, ..., F_b - 1 }
+```
   where $`F_b \in N_{>0}`$ is the number of frequency bins in band $`b`$.
 
 The CAS coefficients are complex values
