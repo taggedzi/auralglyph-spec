@@ -57,9 +57,9 @@ It provides:
 ## 🧠 Core Concept: Canonical Audio Surface (CAS)
 
 At the heart of AuralGlyph is the **CAS**, a 3D tensor:
-$$
+$
 C[b][t][f]
-$$
+$
 
 Where:
 
