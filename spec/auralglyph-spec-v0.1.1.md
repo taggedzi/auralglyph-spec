@@ -107,10 +107,10 @@ A CAS instance consists of:
 A CAS instance is defined over three discrete index sets:
 
 - Band index set  
-  \[
+  ```math
   \mathcal{B} = \{ 0, 1, \dots, B-1 \}
-  \]
   where \(B \in \mathbb{N}_{>0}\) is the number of bands.
+  ```
 
 - Time-frame index set  
   \[
