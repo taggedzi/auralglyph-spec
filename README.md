@@ -26,6 +26,8 @@ AuralGlyph bridges the gap between:
 - machine learning  
 - digital art  
 
+Each Canonical Audio Surface (CAS) represents exactly one scalar sampled signal stream. More complex recordings containing multiple channels, sensors, or related signals are represented as collections of independent CAS instances within an AuralGlyph container.
+
 ---
 
 ## Design principle (v0.1)
