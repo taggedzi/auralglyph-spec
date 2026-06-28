@@ -1,5 +1,11 @@
 #### 4. Transform Profiles
 
+---
+
+Summary: This document outlines the structure and requirements for transform profiles in AuralGlyph, which defines how scalar time-domain signals are converted into Canonical Audio Surfaces (CAS) and vice versa. It specifies various conformance levels: descriptive, interpretable, and reconstructable, each with different metadata requirements. The document also details standard STFT profiles and provides guidelines for custom profiles. Finally, it covers the rules for declaring and ensuring conformance to transform profiles.
+
+---
+
 This section is **normative** unless otherwise noted.
 
 A transform profile defines how a scalar time-domain signal is converted into a Canonical Audio Surface (CAS), and how reconstructable CAS bands may be converted back into a time-domain signal.

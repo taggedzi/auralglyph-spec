@@ -1,5 +1,11 @@
 #### 5. Band Profiles
 
+---
+
+Summary: This document defines how bands organize coefficient data within Canonical Audio Surfaces (CAS) instances. Each band has an identity, frequency mapping, and conformance requirements based on the CAS's declared level of reconstruction support. It covers various roles for bands such as physical-frequency ranges, transform-derived groups, and perceptual groupings. The document also provides examples of standard band profiles and how to mark derived or summary bands. Finally, it outlines rules for band conformance and the distinction between metadata-defined meanings and labels that help human interpretation.
+
+---
+
 This section is **normative** unless otherwise noted.
 
 A band profile defines how a subset of CAS frequency indices is named, described, and interpreted.
