@@ -1,10 +1,51 @@
 #### 5. Band Profiles
 
----
+##### Document Summary
 
-Summary: This document defines how bands organize coefficient data within Canonical Audio Surfaces (CAS) instances. Each band has an identity, frequency mapping, and conformance requirements based on the CAS's declared level of reconstruction support. It covers various roles for bands such as physical-frequency ranges, transform-derived groups, and perceptual groupings. The document also provides examples of standard band profiles and how to mark derived or summary bands. Finally, it outlines rules for band conformance and the distinction between metadata-defined meanings and labels that help human interpretation.
+* **Purpose**: Defines how AuralGlyph band profiles describe the organization, labeling, frequency mapping, and reconstruction role of CAS frequency regions.
+* **Status**: Normative unless otherwise noted.
+* **Applies to**: CAS bands, frequency-bin mappings, band metadata, derived bands, reconstructable bands, and reusable band profile definitions.
+* **Key concepts**:
 
----
+  * A band organizes a subset of CAS frequency indices.
+  * Bands may represent physical frequency ranges, transform-derived bins, perceptual groupings, symbolic categories, domain-specific regions, or visualization data.
+  * Band labels help humans, but explicit metadata defines meaning.
+  * Consumers must not infer scientific, physical, or perceptual meaning from labels alone.
+  * Reconstructable bands must preserve enough mapping and coefficient information to support the declared inverse transform.
+  * Derived, summary, visual-only, or approximate bands are allowed, but must be clearly marked and must not claim reconstructability unless a valid inverse is defined.
+  * Timing, sensor latency, synchronization, and propagation-delay metadata belong to CAS timing metadata and Session metadata, not band profiles.
+* **Defines**:
+
+  * `band_id`
+  * `band_label`
+  * `band_role`
+  * `band_profile_id`
+  * `bin_count`
+  * `frequency_axis`
+  * `frequency_unit`
+  * `frequency_min_hz`
+  * `frequency_max_hz`
+  * `coefficient_shape`
+  * `coefficient_encoding`
+  * `coefficient_unit`
+  * `amplitude_scale`
+  * `derived`
+  * `reconstructable`
+  * standard band roles
+  * optional standard frequency range labels
+  * band ordering and indexing rules
+  * overlapping, derived, and summary band behavior
+* **Does not define**:
+
+  * source-event timing,
+  * sensor latency,
+  * cross-CAS synchronization,
+  * propagation-delay correction,
+  * source localization,
+  * signal interpretation,
+  * classification,
+  * rendering behavior,
+  * or application-specific analysis algorithms.
 
 This section is **normative** unless otherwise noted.
 

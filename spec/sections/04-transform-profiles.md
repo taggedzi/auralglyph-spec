@@ -1,10 +1,46 @@
 #### 4. Transform Profiles
 
----
+##### Document Summary
 
-Summary: This document outlines the structure and requirements for transform profiles in AuralGlyph, which defines how scalar time-domain signals are converted into Canonical Audio Surfaces (CAS) and vice versa. It specifies various conformance levels: descriptive, interpretable, and reconstructable, each with different metadata requirements. The document also details standard STFT profiles and provides guidelines for custom profiles. Finally, it covers the rules for declaring and ensuring conformance to transform profiles.
+* **Purpose**: Defines how AuralGlyph transform profiles describe the conversion between scalar time-domain signals and CAS coefficient data.
+* **Status**: Normative unless otherwise noted.
+* **Applies to**: CAS instances, transform metadata, coefficient encoding, reconstruction claims, and transform-specific interoperability.
+* **Key concepts**:
 
----
+  * A transform profile describes how a scalar time-domain signal is transformed into CAS data.
+  * Reconstructable CAS data must include enough transform metadata to support inverse reconstruction.
+  * CAS instances may have different conformance levels depending on how much metadata and reconstruction support they provide.
+  * Missing metadata must not be assumed by consumers.
+  * Transform profiles may be standard or custom.
+  * Non-reconstructable, approximate, visual-only, or derived CAS data is allowed, but must not claim reconstructability.
+* **Defines**:
+
+  * `transform_type`
+  * `transform_profile_id`
+  * `transform_parameters`
+  * `cas_conformance_level`
+  * `reconstruction_expectation`
+  * `coefficient_encoding`
+  * `amplitude_scale`
+  * `boundary_mode`
+  * `padding_mode`
+  * `normalization`
+  * `AGF-STFT-BASE-V0`
+  * custom transform profile behavior
+* **Conformance levels**:
+
+  * `descriptive`: Minimal metadata for display, rough inspection, archival notes, or approximate use.
+  * `interpretable`: Enough metadata to understand time and frequency meaning.
+  * `reconstructable`: Enough metadata and coefficient data to reconstruct a time-domain signal within the declared reconstruction expectation.
+* **Does not define**:
+
+  * every possible transform family,
+  * domain-specific transform choices,
+  * required use of STFT for all CAS data,
+  * interpretation or classification of signal meaning,
+  * rendering behavior,
+  * or application-specific analysis algorithms.
+
 
 This section is **normative** unless otherwise noted.
 

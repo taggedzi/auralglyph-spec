@@ -1,20 +1,40 @@
 #### 6. Sessions and Cross-CAS Timing
 
----
+## Document Summary
 
-Summary: This document outlines the structure and rules for defining sessions in the AuralGlyph format, which involves relating multiple CAS (Common Acquisition Stream) instances together. Key points include:
+* **Purpose**: Defines how AuralGlyph Sessions relate multiple CAS instances.
+* **Status**: Normative unless otherwise noted.
+* **Applies to**: Multi-CAS containers, stereo audio, multi-channel audio, sensor arrays, multi-station sensor networks, experiments, and derived analysis groupings.
+* **Key concepts**:
 
-- **Session Identity**: Each session must have a unique session_id, type (session_type), and list of member CAS instances (members).
-- **Standard Session Types**: Defines types like "single-recording," "stereo-audio," etc., to categorize the relationship between CAS instances.
-- **Timing Relationships**: Describes how member CAS timelines relate, including synchronization, offsets, and uncertainties.
-- **Sensor Timing Metadata**: Provides details about how each CAS's time coordinate relates to its physical sensor, acquisition system, and recorded timestamps.
-- **Spatial Metadata**: Includes information on station, sensor, device, or source positions for geospatial context.
-- **Derived Interpretations**: Allows referencing derived analysis products that interpret the raw observations.
-- **Conformance Rules**: Ensures that sessions are correctly formatted with sufficient metadata to support the relationships described.
+  * A CAS represents one scalar signal stream.
+  * A Session describes relationships among CAS instances.
+  * CAS timestamps describe the producer-declared observation timeline, not automatically the source-event time.
+  * Timing relationships, synchronization, offsets, sensor latency, integration windows, and uncertainty must be explicit.
+  * Spatial and station metadata may be used to relate observations.
+  * Interpretations and derived products must remain distinguishable from raw observations.
+* **Defines**:
 
-In essence, it's a specification for organizing and relating multiple CAS instances into meaningful sessions, complete with timing, spatial, and interpretation information.
+  * `session_id`
+  * `session_type`
+  * `members`
+  * `time_reference`
+  * `sensor_timing`
+  * `timestamp_basis`
+  * `time_relationship`
+  * `timing_offset_sec`
+  * `timing_uncertainty_sec`
+  * spatial metadata conventions
+  * derived interpretation metadata
+* **Does not define**:
 
----
+  * source-event reconstruction algorithms,
+  * classification rules,
+  * command decisions,
+  * sensor-fusion algorithms,
+  * rendering behavior,
+  * or domain-specific interpretation models.
+
 
 This section is **normative** unless otherwise noted.
 
