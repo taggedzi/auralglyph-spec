@@ -22,7 +22,7 @@ A transform profile identifier SHOULD be stable and versioned. Standard AuralGly
 
 ```text
 AGF-<TRANSFORM>-<PROFILE>-V<MAJOR>
-````
+```
 
 Examples:
 
