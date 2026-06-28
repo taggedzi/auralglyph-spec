@@ -90,8 +90,6 @@ A container MUST NOT imply that all contained CAS instances are related unless a
 
 ---
 
----
-
 ##### 7.3 Container Identity
 
 Each AGF container SHOULD declare a container identity.
@@ -151,8 +149,6 @@ container_type: "derived-analysis-package"
 
 ---
 
----
-
 ##### 7.4 Container Manifest
 
 An AGF container SHOULD include a manifest.
@@ -197,8 +193,6 @@ A consumer SHOULD use the manifest as the first source for discovering container
 
 ---
 
----
-
 ##### 7.5 CAS Storage
 
 Each CAS instance in an AGF container MUST have a unique `cas_id` within that container.
@@ -228,8 +222,6 @@ If a CAS instance is stored externally, the container MUST provide enough refere
 A container MUST NOT store multiple unrelated scalar streams inside a single CAS instance.
 
 Multi-channel, multi-sensor, multi-component, or multi-station data MUST be represented as multiple CAS instances related by Session metadata.
-
----
 
 ---
 
@@ -267,8 +259,6 @@ A container MAY include multiple Sessions that reference the same CAS instance.
 
 ---
 
----
-
 ##### 7.7 Metadata Scope
 
 AGF metadata MAY exist at multiple scopes.
@@ -300,8 +290,6 @@ A metadata field declared at container scope MUST NOT be assumed to apply to eve
 
 ---
 
----
-
 ##### 7.8 Metadata Inheritance
 
 A container MAY define metadata inheritance rules.
@@ -319,8 +307,6 @@ If inheritance rules are not declared, consumers MUST NOT assume inheritance.
 For example, a container-level `time_reference` does not automatically mean every CAS instance is synchronized to that time reference unless the Session or CAS metadata supports that claim.
 
 A producer SHOULD prefer explicit metadata over implicit inheritance when precision matters.
-
----
 
 ---
 
@@ -369,8 +355,6 @@ operator: null
 
 ---
 
----
-
 ##### 7.10 Processing History
 
 An AGF container MAY include processing history.
@@ -409,8 +393,6 @@ reason: "source MP3 decoding cannot recover discarded codec information"
 ```
 
 A consumer MUST NOT assume that a processing step is reversible unless the metadata declares sufficient information for reversal.
-
----
 
 ---
 
@@ -455,8 +437,6 @@ If a derived product modifies coefficient data or creates a new signal stream, i
 
 ---
 
----
-
 ##### 7.12 Views and Projections
 
 An AGF container MAY include views or projections.
@@ -478,8 +458,6 @@ Views MUST NOT alter the underlying CAS data.
 A view that changes, filters, summarizes, or transforms signal data MUST be treated as derived data, not as the original CAS.
 
 A consumer MUST NOT treat a view as equivalent to the source CAS unless the metadata explicitly states that it is a lossless representation.
-
----
 
 ---
 
@@ -521,8 +499,6 @@ required_for_reconstruction: true
 ```
 
 A consumer MUST treat missing required external references as a conformance or completeness problem.
-
----
 
 ---
 
@@ -577,8 +553,6 @@ This specification does not require a specific hash algorithm for v0.1, but prod
 
 ---
 
----
-
 ##### 7.16 Privacy and Redaction
 
 An AGF container MAY omit, reduce, obscure, or redact metadata for privacy, safety, security, proprietary, or operational reasons.
@@ -605,8 +579,6 @@ Missing metadata may mean:
 * redacted,
 * not applicable,
 * or unsupported by the producer.
-
----
 
 ---
 
@@ -639,8 +611,6 @@ A consumer MAY preserve unknown extensions when rewriting or transforming a cont
 
 ---
 
----
-
 ##### 7.18 Container Conformance
 
 An AGF container conforms to this specification only if:
@@ -657,8 +627,6 @@ An AGF container conforms to this specification only if:
 An implementation MUST reject, warn on, or mark as non-conformant any container that makes unsupported claims about synchronization, reconstruction, provenance, interpretation, or metadata scope.
 
 A consumer MAY display or inspect a non-conformant container, but MUST NOT silently treat unsupported claims as precise, reconstructable, authoritative, or complete.
-
----
 
 ---
 
