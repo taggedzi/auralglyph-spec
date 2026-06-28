@@ -1,6 +1,6 @@
 #### 6. Sessions and Cross-CAS Timing
 
-## Document Summary
+##### Document Summary
 
 * **Purpose**: Defines how AuralGlyph Sessions relate multiple CAS instances.
 * **Status**: Normative unless otherwise noted.
