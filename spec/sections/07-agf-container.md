@@ -26,6 +26,8 @@
   * derived product handling
   * external references
   * integrity metadata
+  * logical container versus physical serialization
+  * transport and networking boundaries
   * container conformance
 * **Does not define**:
 
@@ -49,7 +51,26 @@ A CAS remains one scalar signal stream. The container provides structure around 
 
 ---
 
-##### 7.1 Container Purpose
+##### 7.1 Logical Container Versus Physical Serialization
+
+In v0.1, an AGF container is a logical structure, not a required physical storage format.
+
+An AGF container defines the required relationships among container metadata, CAS instances, Sessions, profiles, derived products, provenance, and references.
+
+This specification does not require the container to be stored as a ZIP archive, directory tree, single binary file, database, stream, or network object.
+
+Future AuralGlyph versions MAY define one or more physical serialization profiles, such as:
+
+- `AGF-ZIP-V1`
+- `AGF-DIR-V1`
+- `AGF-STREAM-V1`
+- `AGF-BINARY-V1`
+
+A physical serialization profile MUST preserve the logical meaning of the AGF container model.
+
+---
+
+##### 7.2 Container Purpose
 
 An AGF container provides a common structure for storing and exchanging AuralGlyph data.
 
@@ -69,7 +90,9 @@ A container MUST NOT imply that all contained CAS instances are related unless a
 
 ---
 
-##### 7.2 Container Identity
+---
+
+##### 7.3 Container Identity
 
 Each AGF container SHOULD declare a container identity.
 
@@ -128,7 +151,9 @@ container_type: "derived-analysis-package"
 
 ---
 
-##### 7.3 Container Manifest
+---
+
+##### 7.4 Container Manifest
 
 An AGF container SHOULD include a manifest.
 
@@ -172,7 +197,9 @@ A consumer SHOULD use the manifest as the first source for discovering container
 
 ---
 
-##### 7.4 CAS Storage
+---
+
+##### 7.5 CAS Storage
 
 Each CAS instance in an AGF container MUST have a unique `cas_id` within that container.
 
@@ -204,7 +231,9 @@ Multi-channel, multi-sensor, multi-component, or multi-station data MUST be repr
 
 ---
 
-##### 7.5 Session Storage
+---
+
+##### 7.6 Session Storage
 
 Sessions MAY be stored inline or as separate internal objects.
 
@@ -238,7 +267,9 @@ A container MAY include multiple Sessions that reference the same CAS instance.
 
 ---
 
-##### 7.6 Metadata Scope
+---
+
+##### 7.7 Metadata Scope
 
 AGF metadata MAY exist at multiple scopes.
 
@@ -269,7 +300,9 @@ A metadata field declared at container scope MUST NOT be assumed to apply to eve
 
 ---
 
-##### 7.7 Metadata Inheritance
+---
+
+##### 7.8 Metadata Inheritance
 
 A container MAY define metadata inheritance rules.
 
@@ -289,7 +322,9 @@ A producer SHOULD prefer explicit metadata over implicit inheritance when precis
 
 ---
 
-##### 7.8 Provenance Metadata
+---
+
+##### 7.9 Provenance Metadata
 
 An AGF container SHOULD record provenance when known.
 
@@ -334,7 +369,9 @@ operator: null
 
 ---
 
-##### 7.9 Processing History
+---
+
+##### 7.10 Processing History
 
 An AGF container MAY include processing history.
 
@@ -375,7 +412,9 @@ A consumer MUST NOT assume that a processing step is reversible unless the metad
 
 ---
 
-##### 7.10 Derived Products
+---
+
+##### 7.11 Derived Products
 
 An AGF container MAY include derived products.
 
@@ -416,7 +455,9 @@ If a derived product modifies coefficient data or creates a new signal stream, i
 
 ---
 
-##### 7.11 Views and Projections
+---
+
+##### 7.12 Views and Projections
 
 An AGF container MAY include views or projections.
 
@@ -440,7 +481,9 @@ A consumer MUST NOT treat a view as equivalent to the source CAS unless the meta
 
 ---
 
-##### 7.12 External References
+---
+
+##### 7.13 External References
 
 An AGF container MAY reference external resources.
 
@@ -481,7 +524,34 @@ A consumer MUST treat missing required external references as a conformance or c
 
 ---
 
-##### 7.13 Integrity Metadata
+---
+
+##### 7.14 Transport and Networking
+
+AuralGlyph v0.1 does not define a required network transport protocol.
+
+AGF containers and CAS data may be transmitted using any transport chosen by an implementation, including file transfer, HTTP, WebSocket, message queues, streaming protocols, or domain-specific systems.
+
+The transport mechanism MUST NOT change the meaning of the contained CAS, Session, timing, transform, band, provenance, or derived-product metadata.
+
+Implementations that transmit partial, streamed, chunked, or live AGF data SHOULD clearly declare:
+
+- chunk ordering,
+- timing basis,
+- completeness status,
+- missing-data behavior,
+- retransmission behavior,
+- compression behavior,
+- encryption or authentication behavior when relevant,
+- and whether the received data represents a complete AGF container or an incremental stream.
+
+Future AuralGlyph versions MAY define optional transport profiles for live streaming, distributed sensor networks, or real-time analysis workflows.
+
+Transport profiles MUST remain layered above the core AGF data model.
+
+---
+
+##### 7.15 Integrity Metadata
 
 An AGF container SHOULD support integrity metadata.
 
@@ -507,7 +577,9 @@ This specification does not require a specific hash algorithm for v0.1, but prod
 
 ---
 
-##### 7.14 Privacy and Redaction
+---
+
+##### 7.16 Privacy and Redaction
 
 An AGF container MAY omit, reduce, obscure, or redact metadata for privacy, safety, security, proprietary, or operational reasons.
 
@@ -536,7 +608,9 @@ Missing metadata may mean:
 
 ---
 
-##### 7.15 Extensions
+---
+
+##### 7.17 Extensions
 
 An AGF container MAY include extension metadata.
 
@@ -565,7 +639,9 @@ A consumer MAY preserve unknown extensions when rewriting or transforming a cont
 
 ---
 
-##### 7.16 Container Conformance
+---
+
+##### 7.18 Container Conformance
 
 An AGF container conforms to this specification only if:
 
@@ -584,7 +660,9 @@ A consumer MAY display or inspect a non-conformant container, but MUST NOT silen
 
 ---
 
-##### 7.17 Non-Normative Notes
+---
+
+##### 7.19 Non-Normative Notes
 
 A minimal AGF container may contain only one CAS instance and basic metadata.
 
@@ -603,43 +681,3 @@ The AGF container packages CAS, Sessions, metadata, and related objects.
 AuralGlyph should remain useful for simple audio-like workflows while also supporting complex scientific, industrial, environmental, spatial-audio, and sensor-network use cases.
 
 ---
-
-##### 7.18 Transport and Networking
-
-AuralGlyph v0.1 does not define a required network transport protocol.
-
-AGF containers and CAS data may be transmitted using any transport chosen by an implementation, including file transfer, HTTP, WebSocket, message queues, streaming protocols, or domain-specific systems.
-
-The transport mechanism MUST NOT change the meaning of the contained CAS, Session, timing, transform, band, provenance, or derived-product metadata.
-
-Implementations that transmit partial, streamed, chunked, or live AGF data SHOULD clearly declare:
-
-- chunk ordering,
-- timing basis,
-- completeness status,
-- missing-data behavior,
-- retransmission behavior,
-- compression behavior,
-- encryption or authentication behavior when relevant,
-- and whether the received data represents a complete AGF container or an incremental stream.
-
-Future AuralGlyph versions MAY define optional transport profiles for live streaming, distributed sensor networks, or real-time analysis workflows.
-
-Transport profiles MUST remain layered above the core AGF data model.
-
-##### 7.19 Logical Container Versus Physical Serialization
-
-In v0.1, an AGF container is a logical structure, not a required physical storage format.
-
-An AGF container defines the required relationships among container metadata, CAS instances, Sessions, profiles, derived products, provenance, and references.
-
-This specification does not require the container to be stored as a ZIP archive, directory tree, single binary file, database, stream, or network object.
-
-Future AuralGlyph versions MAY define one or more physical serialization profiles, such as:
-
-- `AGF-ZIP-V1`
-- `AGF-DIR-V1`
-- `AGF-STREAM-V1`
-- `AGF-BINARY-V1`
-
-A physical serialization profile MUST preserve the logical meaning of the AGF container model.
