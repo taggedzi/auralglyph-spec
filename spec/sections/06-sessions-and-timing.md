@@ -1,6 +1,8 @@
-#### 6. Sessions and Cross-CAS Timing
+# 6. Sessions and Cross-CAS Timing
 
-##### Document Summary
+Part of the [current v0.1 working specification](../auralglyph-spec.md). CAS time coordinates and sensor-pose conventions are defined in §3.2 and §3.5.
+
+## Document Summary
 
 * **Purpose**: Defines how AuralGlyph Sessions relate multiple CAS instances.
 * **Status**: Normative unless otherwise noted.
@@ -38,15 +40,15 @@
 
 This section is **normative** unless otherwise noted.
 
-A Session defines relationships among multiple CAS instances.
+A Session defines the membership and context of related CAS instances, normally involving multiple streams.
 
-A CAS represents one scalar signal stream. A Session describes how two or more CAS instances are related in time, space, source context, observation context, or intended use.
+A CAS represents one scalar signal stream. A Session describes how CAS instances are related in time, space, source context, observation context, or intended use. Multi-stream relationships are its principal use; a `single-recording` Session MAY describe one member.
 
 Sessions are required when an AGF container represents multi-channel, multi-sensor, multi-station, multi-modal, or distributed observations.
 
 ---
 
-##### 6.1 Session Purpose
+## 6.1 Session Purpose
 
 A Session answers questions such as:
 
@@ -64,11 +66,11 @@ A Session describes relationships among observations.
 
 ---
 
-##### 6.2 Session Identity
+## 6.2 Session Identity
 
 Each Session MUST declare:
 
-```yaml
+```text
 session_id: <string>
 session_type: <string>
 members: <array>
@@ -95,11 +97,13 @@ session:
 
 A CAS instance MAY belong to more than one Session.
 
+A Session MUST have at least one member. A `stereo-audio` Session MUST identify exactly two members with distinct `left` and `right` roles. Sample synchronization remains an explicit timing claim, not an assumption derived from the Session type.
+
 For example, a microphone CAS may belong to both a station-level session and a larger field-observation session.
 
 ---
 
-##### 6.3 Standard Session Types
+## 6.3 Standard Session Types
 
 AuralGlyph v0.1 defines the following standard session types:
 
@@ -155,11 +159,11 @@ Custom session types SHOULD include enough metadata for consumers to understand 
 
 ---
 
-##### 6.4 Session Membership
+## 6.4 Session Membership
 
 Each Session member MUST identify a CAS instance.
 
-```yaml
+```text
 members:
   - cas_id: <string>
 ```
@@ -194,7 +198,7 @@ Those relationships MUST be declared by Session metadata.
 
 ---
 
-##### 6.5 Time Reference
+## 6.5 Time Reference
 
 A Session SHOULD declare a shared time reference when timing relationships matter.
 
@@ -210,7 +214,7 @@ time_reference:
 
 Common fields include:
 
-```yaml
+```text
 time_reference:
   time_standard: <string>
   clock_source: <string>
@@ -228,7 +232,7 @@ If no reliable shared time reference exists, the Session MUST NOT claim precise 
 
 ---
 
-##### 6.6 CAS Observation Time
+## 6.6 CAS Observation Time
 
 Unless explicitly stated otherwise, CAS time coordinates describe the producer-declared observation timeline for the receiving sensor.
 
@@ -254,7 +258,7 @@ Source-time estimation is an interpretive operation.
 
 ---
 
-##### 6.7 Sensor Timing Metadata
+## 6.7 Sensor Timing Metadata
 
 Each CAS MAY declare sensor timing metadata.
 
@@ -293,7 +297,7 @@ Where:
 
 If the producer knows sensor or acquisition latency, it SHOULD declare:
 
-```yaml
+```text
 sensor_latency_sec: <number>
 latency_correction_applied: <boolean>
 latency_uncertainty_sec: <number or null>
@@ -303,7 +307,7 @@ If latency is unknown, the producer SHOULD use `null` rather than inventing a va
 
 ---
 
-##### 6.8 Integration Windows
+## 6.8 Integration Windows
 
 Some sensors do not produce instantaneous measurements.
 
@@ -344,7 +348,7 @@ A consumer MUST NOT assume that a timestamp represents an instantaneous value un
 
 ---
 
-##### 6.9 Session-Level Timing Relationships
+## 6.9 Session-Level Timing Relationships
 
 A Session SHOULD declare how member CAS timelines relate when timing matters.
 
@@ -393,7 +397,7 @@ Where:
 
 If a timing offset is known or estimated, it SHOULD be declared as:
 
-```yaml
+```text
 timing_offset_sec: <number or null>
 timing_uncertainty_sec: <number or null>
 ```
@@ -406,11 +410,13 @@ For v0.1, the default convention is:
 corrected_time = cas_time + timing_offset_sec
 ```
 
-relative to the Session timeline.
+relative to the Session timeline. The referenced CAS time includes its declared frame-zero offset; consumers MUST NOT apply that offset twice.
+
+An offset relates time coordinates; it MUST NOT be assumed to correct sensor latency or propagation delay. Any applied correction MUST identify its purpose and timestamp basis. A fixed offset does not describe clock drift. Drift-dependent alignment requires an explicit profile or extension defining the mapping and its applicable interval.
 
 ---
 
-##### 6.10 Propagation Delay
+## 6.10 Propagation Delay
 
 Propagation delay is the time required for a signal to travel from a source to a receiving sensor.
 
@@ -438,7 +444,7 @@ Source-time estimation, source localization, causal reconstruction, and delay co
 
 ---
 
-##### 6.11 Spatial Metadata
+## 6.11 Spatial Metadata
 
 A Session MAY declare spatial metadata for stations, sensors, devices, or sources.
 
@@ -473,7 +479,7 @@ A consumer MUST NOT assume precise sensor position or orientation unless the met
 
 ---
 
-##### 6.12 Derived Interpretations
+## 6.12 Derived Interpretations
 
 A Session MAY reference derived analysis products.
 
@@ -511,13 +517,13 @@ AuralGlyph stores observations and relationships. Interpretations may be stored,
 
 ---
 
-##### 6.13 Session Conformance
+## 6.13 Session Conformance
 
 A Session conforms to this specification only if:
 
 1. `session_id` is present,
 2. `session_type` is present,
-3. every member references an existing CAS instance,
+3. every member references an existing CAS instance or an explicitly declared external CAS dependency as specified in §7.6,
 4. timing claims are supported by timing metadata,
 5. synchronization claims include uncertainty when known,
 6. spatial claims are supported by spatial metadata when required,
@@ -530,7 +536,7 @@ A consumer MAY still display or inspect a non-conformant Session, but MUST NOT s
 
 ---
 
-##### 6.14 Non-Normative Notes
+## 6.14 Non-Normative Notes
 
 A Session is the bridge between independent CAS instances.
 

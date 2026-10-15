@@ -1,6 +1,8 @@
-#### 7. AGF Container Structure
+# 7. AGF Container Structure
 
-##### Document Summary
+Part of the [current v0.1 working specification](../auralglyph-spec.md). This section defines logical packaging; example paths and file extensions do not specify an on-disk encoding.
+
+## Document Summary
 
 * **Purpose**: Defines the role and structure of an AuralGlyph File / AGF container.
 * **Status**: Normative unless otherwise noted.
@@ -43,7 +45,7 @@ This section is **normative** unless otherwise noted.
 
 An AGF container is the top-level structure used to package AuralGlyph data.
 
-An AGF container MAY contain one CAS instance or many CAS instances. It MAY also contain Sessions, metadata, provenance, derived products, views, profiles, and references needed to interpret the contained data.
+An AGF container MUST contain or explicitly reference at least one CAS instance. It MAY also contain Sessions, metadata, provenance, derived products, views, profiles, and references needed to interpret the contained data.
 
 The AGF container does not change the meaning of CAS.
 
@@ -51,7 +53,7 @@ A CAS remains one scalar signal stream. The container provides structure around 
 
 ---
 
-##### 7.1 Logical Container Versus Physical Serialization
+## 7.1 Logical Container Versus Physical Serialization
 
 In v0.1, an AGF container is a logical structure, not a required physical storage format.
 
@@ -70,7 +72,7 @@ A physical serialization profile MUST preserve the logical meaning of the AGF co
 
 ---
 
-##### 7.2 Container Purpose
+## 7.2 Container Purpose
 
 An AGF container provides a common structure for storing and exchanging AuralGlyph data.
 
@@ -86,13 +88,13 @@ It answers questions such as:
 * Are any data objects stored externally?
 * What integrity or validation information is available?
 
-A container MUST NOT imply that all contained CAS instances are related unless a Session or metadata relationship explicitly states that relationship.
+A container MUST NOT imply that all contained CAS instances are related unless the applicable Session explicitly states that relationship. Other metadata may describe provenance or packaging relationships without establishing signal alignment.
 
 ---
 
-##### 7.3 Container Identity
+## 7.3 Container Identity
 
-Each AGF container SHOULD declare a container identity.
+Each AGF container MUST declare `agf_version`. It SHOULD also declare a container identity.
 
 Example:
 
@@ -106,7 +108,7 @@ container:
 
 Common fields include:
 
-```yaml
+```text
 container:
   agf_version: <string>
   container_id: <string>
@@ -149,7 +151,7 @@ container_type: "derived-analysis-package"
 
 ---
 
-##### 7.4 Container Manifest
+## 7.4 Container Manifest
 
 An AGF container SHOULD include a manifest.
 
@@ -193,7 +195,7 @@ A consumer SHOULD use the manifest as the first source for discovering container
 
 ---
 
-##### 7.5 CAS Storage
+## 7.5 CAS Storage
 
 Each CAS instance in an AGF container MUST have a unique `cas_id` within that container.
 
@@ -219,13 +221,13 @@ A CAS instance MAY be stored:
 
 If a CAS instance is stored externally, the container MUST provide enough reference metadata for a consumer to locate or identify it.
 
-A container MUST NOT store multiple unrelated scalar streams inside a single CAS instance.
+A container MUST NOT store multiple scalar streams inside a single CAS instance, whether those streams are related or unrelated.
 
 Multi-channel, multi-sensor, multi-component, or multi-station data MUST be represented as multiple CAS instances related by Session metadata.
 
 ---
 
-##### 7.6 Session Storage
+## 7.6 Session Storage
 
 Sessions MAY be stored inline or as separate internal objects.
 
@@ -255,11 +257,13 @@ session:
 
 A container MAY include CAS instances that do not belong to any Session.
 
+However, a claimed multi-channel, multi-sensor, multi-component, or distributed relationship MUST have a Session as required by §6. Unrelated CAS instances may share a container without such a claim.
+
 A container MAY include multiple Sessions that reference the same CAS instance.
 
 ---
 
-##### 7.7 Metadata Scope
+## 7.7 Metadata Scope
 
 AGF metadata MAY exist at multiple scopes.
 
@@ -290,7 +294,7 @@ A metadata field declared at container scope MUST NOT be assumed to apply to eve
 
 ---
 
-##### 7.8 Metadata Inheritance
+## 7.8 Metadata Inheritance
 
 A container MAY define metadata inheritance rules.
 
@@ -302,7 +306,7 @@ metadata_inheritance:
   container_provenance_applies_to_all_cas: true
 ```
 
-If inheritance rules are not declared, consumers MUST NOT assume inheritance.
+If inheritance rules are not declared by the core specification, a profile, or explicit metadata, consumers MUST NOT assume inheritance. The CAS-to-band encoding and scaling defaults in §3.5 are explicit core rules; they do not establish inheritance from containers or Sessions.
 
 For example, a container-level `time_reference` does not automatically mean every CAS instance is synchronized to that time reference unless the Session or CAS metadata supports that claim.
 
@@ -310,7 +314,7 @@ A producer SHOULD prefer explicit metadata over implicit inheritance when precis
 
 ---
 
-##### 7.9 Provenance Metadata
+## 7.9 Provenance Metadata
 
 An AGF container SHOULD record provenance when known.
 
@@ -355,7 +359,7 @@ operator: null
 
 ---
 
-##### 7.10 Processing History
+## 7.10 Processing History
 
 An AGF container MAY include processing history.
 
@@ -396,7 +400,7 @@ A consumer MUST NOT assume that a processing step is reversible unless the metad
 
 ---
 
-##### 7.11 Derived Products
+## 7.11 Derived Products
 
 An AGF container MAY include derived products.
 
@@ -433,11 +437,11 @@ derived_products:
 
 A derived product MUST NOT be presented as raw CAS data.
 
-If a derived product modifies coefficient data or creates a new signal stream, it SHOULD be represented as a new CAS instance or clearly marked derived data object.
+If a derived product modifies coefficient data or creates a new signal stream, it MUST be represented as a new CAS instance or clearly marked derived data object, as required by §3.6.
 
 ---
 
-##### 7.12 Views and Projections
+## 7.12 Views and Projections
 
 An AGF container MAY include views or projections.
 
@@ -461,7 +465,7 @@ A consumer MUST NOT treat a view as equivalent to the source CAS unless the meta
 
 ---
 
-##### 7.13 External References
+## 7.13 External References
 
 An AGF container MAY reference external resources.
 
@@ -502,7 +506,7 @@ A consumer MUST treat missing required external references as a conformance or c
 
 ---
 
-##### 7.14 Transport and Networking
+## 7.14 Transport and Networking
 
 AuralGlyph v0.1 does not define a required network transport protocol.
 
@@ -527,7 +531,7 @@ Transport profiles MUST remain layered above the core AGF data model.
 
 ---
 
-##### 7.15 Integrity Metadata
+## 7.15 Integrity Metadata
 
 An AGF container SHOULD support integrity metadata.
 
@@ -535,7 +539,7 @@ Integrity metadata may include hashes, sizes, signatures, or validation records.
 
 Example:
 
-```yaml
+```text
 integrity:
   objects:
     - object_id: "cas-left"
@@ -553,7 +557,7 @@ This specification does not require a specific hash algorithm for v0.1, but prod
 
 ---
 
-##### 7.16 Privacy and Redaction
+## 7.16 Privacy and Redaction
 
 An AGF container MAY omit, reduce, obscure, or redact metadata for privacy, safety, security, proprietary, or operational reasons.
 
@@ -582,7 +586,7 @@ Missing metadata may mean:
 
 ---
 
-##### 7.17 Extensions
+## 7.17 Extensions
 
 An AGF container MAY include extension metadata.
 
@@ -611,7 +615,7 @@ A consumer MAY preserve unknown extensions when rewriting or transforming a cont
 
 ---
 
-##### 7.18 Container Conformance
+## 7.18 Container Conformance
 
 An AGF container conforms to this specification only if:
 
@@ -630,7 +634,7 @@ A consumer MAY display or inspect a non-conformant container, but MUST NOT silen
 
 ---
 
-##### 7.19 Non-Normative Notes
+## 7.19 Non-Normative Notes
 
 A minimal AGF container may contain only one CAS instance and basic metadata.
 

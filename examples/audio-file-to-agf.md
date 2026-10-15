@@ -2,6 +2,8 @@
 
 This example is non-normative.
 
+It follows the [current v0.1 working specification](../spec/auralglyph-spec.md). The metadata below illustrates channel relationships only; it omits CAS payloads and transform metadata and is not a complete reconstructable fixture.
+
 A conventional audio file such as WAV, FLAC, or MP3 is not stored directly as a CAS. An encoder first decodes the file into time-domain sample streams, then transforms each scalar stream into a CAS instance.
 
 ```text
@@ -51,12 +53,15 @@ cas_instances:
     sensor_type: "unknown"
 
 session:
+  session_id: "stereo-song-session"
   session_type: "stereo-audio"
   members:
     - cas_id: "cas-left"
+      role: "left"
+      time_relationship: "sample-synchronous"
     - cas_id: "cas-right"
-  alignment:
-    time_relationship: "sample-synchronous"
+      role: "right"
+      time_relationship: "sample-synchronous"
 ```
 
 The CAS instances remain independent scalar streams. The session metadata defines that they belong together and should be interpreted as synchronized stereo channels.

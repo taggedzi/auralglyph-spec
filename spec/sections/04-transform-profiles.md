@@ -1,6 +1,8 @@
-#### 4. Transform Profiles
+# 4. Transform Profiles
 
-##### Document Summary
+Part of the [current v0.1 working specification](../auralglyph-spec.md). The core metadata conventions in §3.5 apply throughout this section.
+
+## Document Summary
 
 * **Purpose**: Defines how AuralGlyph transform profiles describe the conversion between scalar time-domain signals and CAS coefficient data.
 * **Status**: Normative unless otherwise noted.
@@ -12,7 +14,7 @@
   * CAS instances may have different conformance levels depending on how much metadata and reconstruction support they provide.
   * Missing metadata must not be assumed by consumers.
   * Transform profiles may be standard or custom.
-  * Non-reconstructable, approximate, visual-only, or derived CAS data is allowed, but must not claim reconstructability.
+  * Non-reconstructable, visual-only, or derived CAS data is allowed without implying waveform recovery. Approximate reconstruction requires a defined inverse and declared limitations.
 * **Defines**:
 
   * `transform_type`
@@ -52,13 +54,15 @@ A CAS intended only for visualization or approximate analysis may require less t
 
 ---
 
-##### 4.1 Transform Profile Identity
+## 4.1 Transform Profile Identity
 
-Each CAS instance MUST declare a transform profile using the following fields:
+Each CAS instance MUST declare `transform_type`. It MUST also declare the following profile information when required by its conformance level:
 
 - `transform_type` — the general transform family, such as `"stft"`, `"cqt"`, `"wavelet"`, `"custom"`, or `"unknown"`.
 - `transform_profile_id` — a profile identifier naming a standard or custom transform profile, when known.
 - `transform_parameters` — a structured object containing transform parameters known to the producer.
+
+`transform_profile_id` and `transform_parameters` are required for reconstructable CAS. At other levels, producers SHOULD include them when known. Missing profile identity MUST NOT be replaced with an invented standard profile identifier.
 
 A transform profile identifier SHOULD be stable and versioned. Standard AuralGlyph profiles SHOULD use the form:
 
@@ -76,25 +80,29 @@ AGF-CQT-MUSIC-V1
 AGF-WAVELET-SEISMIC-V1
 ```
 
+Only `AGF-STFT-BASE-V0` has a profile section in this draft. The other identifiers illustrate naming conventions; they are not defined profiles and MUST NOT be treated as supplying parameters or reconstruction behavior.
+
 Custom profiles MAY use implementation-specific identifiers, but MUST include sufficient metadata to interpret the transform at the declared conformance level.
 
 If the transform is not known, `transform_type` MAY be `"unknown"`, but the CAS MUST NOT claim reconstructability.
 
 ---
 
-##### 4.2 CAS Transform Conformance Levels
+## 4.2 CAS Transform Conformance Levels
 
 Transform metadata requirements depend on the declared conformance level of the CAS instance.
 
 A CAS instance MUST declare:
 
-```yaml
+```text
 cas_conformance_level: "descriptive" | "interpretable" | "reconstructable"
 ```
 
 The declared level tells consumers what they may safely assume.
 
-###### 4.2.1 Descriptive CAS
+The field lists below supplement the core identity and metadata requirements in §3.5. They are not standalone object schemas. A conformance level does not establish sensor accuracy, synchronization, or scientific validity.
+
+### 4.2.1 Descriptive CAS
 
 A **descriptive CAS** records a time-frequency surface with minimal metadata.
 
@@ -108,7 +116,7 @@ It is suitable for:
 
 A descriptive CAS MUST declare at least:
 
-```yaml
+```text
 cas_conformance_level: "descriptive"
 transform_type: <string or "unknown">
 coefficient_encoding: <string>
@@ -121,7 +129,7 @@ Each band SHOULD include approximate frequency information when available.
 
 A descriptive CAS MUST NOT claim that it can reconstruct the original time-domain signal.
 
-###### 4.2.2 Interpretable CAS
+### 4.2.2 Interpretable CAS
 
 An **interpretable CAS** provides enough metadata for consumers to understand the time and frequency meaning of the CAS coefficients.
 
@@ -135,7 +143,7 @@ It is suitable for:
 
 An interpretable CAS MUST declare at least:
 
-```yaml
+```text
 cas_conformance_level: "interpretable"
 transform_type: <string>
 coefficient_encoding: <string>
@@ -152,11 +160,13 @@ The `time_axis` metadata MUST define either:
 * `hop_length_samples`, when sample-rate based timing is known, or
 * `frame_spacing_sec`, when frames are already expressed in seconds.
 
-Each band MUST define enough frequency metadata to map CAS frequency indices to approximate physical frequencies or declared symbolic bins.
+Each band MUST declare a physical, transform-derived, symbolic, or explicitly unknown frequency mapping as permitted by §5.3.2. An unknown mapping records the limit of available interpretation; it MUST NOT be treated as a physical frequency axis.
 
 An interpretable CAS MAY be approximate. It does not need to preserve all information required for inverse reconstruction.
 
-###### 4.2.3 Reconstructable CAS
+Here `approximate` does not by itself establish an available inverse. Any claimed inverse, including one for an individual band, MUST have a defined method and the parameters it requires. When no inverse is defined, the expectation MUST be `not-reconstructable`.
+
+### 4.2.3 Reconstructable CAS
 
 A **reconstructable CAS** provides enough metadata and coefficient data to reconstruct a time-domain signal for all bands marked `reconstructable: true`.
 
@@ -170,16 +180,14 @@ It is suitable for:
 
 A reconstructable CAS MUST declare:
 
-```yaml
+```text
 cas_conformance_level: "reconstructable"
 transform_type: <string>
 transform_profile_id: <string>
 transform_parameters: <object>
 sample_rate_hz: <number>
-analysis_window_length_samples: <integer>
-hop_length_samples: <integer>
 num_frames: <integer>
-coefficient_encoding: "complex-real-imag" | "complex-mag-phase"
+coefficient_encoding: <invertible encoding defined by the profile>
 amplitude_scale: <string>
 bands: <array>
 reconstruction_expectation: "exact-within-numerical-precision" | "lossy-bounded" | "approximate"
@@ -187,7 +195,9 @@ reconstruction_expectation: "exact-within-numerical-precision" | "lossy-bounded"
 
 For frame-based transforms, a reconstructable CAS MUST also define:
 
-```yaml
+```text
+analysis_window_length_samples: <integer>
+hop_length_samples: <integer>
 window_function: <string>
 window_parameters: <object or null>
 boundary_mode: <string>
@@ -197,16 +207,18 @@ normalization: <string>
 
 For STFT-like transforms, it MUST also define:
 
-```yaml
+```text
 fft_size: <integer>
 phase_unit: "radians"
 ```
 
 A reconstructable CAS MUST NOT omit phase information unless the declared transform profile defines a valid reconstruction method without stored phase.
 
+A reconstructable CAS MUST contain at least one band marked `reconstructable: true`. Additional descriptive or derived bands MAY be present. Bands marked non-reconstructable MUST NOT be required for inversion; a derived band used by the inverse MUST itself meet the reconstructable-band requirements. Reconstruction coverage and limitations MUST be stated; partial-band reconstruction MUST NOT be described as recovery of omitted source frequencies.
+
 ---
 
-##### 4.3 General Transform Requirements
+## 4.3 General Transform Requirements
 
 For every CAS instance, the declared transform metadata MUST be sufficient for the declared `cas_conformance_level`.
 
@@ -222,27 +234,27 @@ If any required reconstruction metadata is missing, the affected band MUST be tr
 
 ---
 
-##### 4.4 Analysis and Inverse Relationship
+## 4.4 Analysis and Inverse Relationship
 
 A transform profile defines an analysis operation:
 
 ```math
-C = T(x)
+C = A(x)
 ```
 
 where:
 
 * `x` is the scalar time-domain signal,
-* `T` is the declared analysis transform,
+* `A` is the declared analysis transform,
 * `C` is the resulting CAS coefficient structure.
 
 For reconstructable bands, the profile also defines an inverse operation:
 
 ```math
-x_hat = T^{-1}(C)
+\hat{x} = A^{-1}(C)
 ```
 
-where `x_hat` is the reconstructed time-domain signal.
+where $`\hat{x}`$ is the reconstructed time-domain signal.
 
 The inverse MAY be exact or approximate, depending on the transform profile. The profile MUST state its reconstruction expectation using one of the following values:
 
@@ -251,111 +263,41 @@ The inverse MAY be exact or approximate, depending on the transform profile. The
 * `"approximate"`
 * `"not-reconstructable"`
 
-If the reconstruction expectation is `"lossy-bounded"`, the profile SHOULD define an error metric or tolerance.
+If the reconstruction expectation is `"lossy-bounded"`, the profile MUST define the error metric, reference signal, and tolerance that bound the loss. Without a defined bound, the expectation MUST NOT be `"lossy-bounded"`.
 
 If the reconstruction expectation is `"not-reconstructable"`, consumers MUST NOT present the CAS as a reversible encoding of the source signal.
 
 ---
 
-##### 4.5 Required Transform Parameters
+## 4.5 Required Transform Parameters
 
-Required transform parameters depend on conformance level.
+This section applies together with the complete level-specific requirements in §4.2 and the core metadata conventions in §3.5. It does not define a second, smaller set of minimum fields.
 
-###### 4.5.1 Descriptive Minimum
+### 4.5.1 Descriptive Minimum
 
-A descriptive CAS MUST provide enough information to identify the data as a CAS-like time-frequency surface.
+Use §4.2.1. The producer MUST identify the encoding and declare that reconstruction is unavailable. Known transform and axis details SHOULD be recorded, but unknown values MUST NOT be invented.
 
-Minimum fields:
+### 4.5.2 Interpretable Minimum
 
-```yaml
-cas_conformance_level: "descriptive"
-transform_type: <string or "unknown">
-coefficient_encoding: <string>
-num_frames: <integer>
-bands: <array>
-```
+Use §4.2.2. The `time_axis` object MUST define either sample-based spacing or direct `frame_spacing_sec` as described in §3.2. Band mappings follow §5.3.2. Approximate or symbolic meaning MUST remain distinguishable from exact physical coordinates.
 
-###### 4.5.2 Interpretable Minimum
+### 4.5.3 Reconstructable Minimum
 
-An interpretable CAS MUST provide enough information to map frame and frequency indices to meaningful coordinates.
+Use §4.2.3 and the applicable profile. All parameters needed for inversion MUST be defined, including time-frame meaning, coefficient encoding and scaling, band-to-transform mapping, and reconstruction coverage.
 
-Minimum fields:
+Frame-based transforms require explicit window, hop, boundary, padding, and normalization behavior. STFT additionally requires `fft_size` and `phase_unit: "radians"`. Other transform families MUST define their own applicable parameters rather than inheriting an unspecified STFT convention.
 
-```yaml
-cas_conformance_level: "interpretable"
-transform_type: <string>
-coefficient_encoding: <string>
-num_frames: <integer>
-time_axis: <object>
-bands: <array>
-amplitude_scale: <string>
-```
+Frequency layout is described by each band's `frequency_axis`, with additional transform parameters where the profile requires them. Repeated timing or transform parameters MUST agree under §3.5.
 
-The `time_axis` object SHOULD include one of:
-
-```yaml
-hop_length_samples: <integer>
-sample_rate_hz: <number>
-```
-
-or:
-
-```yaml
-frame_spacing_sec: <number>
-frame_zero_time_offset_sec: <number>
-```
-
-###### 4.5.3 Reconstructable Minimum
-
-A reconstructable CAS MUST define all parameters needed to interpret and invert the transform.
-
-For frame-based transforms, this includes at least:
-
-```yaml
-sample_rate_hz: <number>
-analysis_window_length_samples: <integer>
-hop_length_samples: <integer>
-num_frames: <integer>
-window_function: <string>
-window_parameters: <object or null>
-boundary_mode: <string>
-padding_mode: <string>
-normalization: <string>
-coefficient_encoding: "complex-real-imag" | "complex-mag-phase"
-amplitude_scale: <string>
-```
-
-For frequency-domain transforms, this includes at least:
-
-```yaml
-frequency_layout: <string>
-bin_mapping_params: <object>
-frequency_unit: "Hz"
-phase_unit: "radians"
-```
-
-For STFT-like transforms, this also includes:
-
-```yaml
-fft_size: <integer>
-```
-
-The default physical units are:
-
-* frequency in Hertz,
-* time in seconds,
-* phase in radians,
-* sample counts as dimensionless integers.
-
-Profiles MAY define additional parameters when required.
+Default physical units are Hz for frequency, seconds for time, and radians for phase. Sample and bin counts are dimensionless integers. Profiles MAY define additional parameters, but MUST NOT weaken the requirements associated with a claimed capability.
 
 ---
 
-##### 4.6 Coefficient Encoding
+## 4.6 Coefficient Encoding
 
-A transform profile MUST declare how complex coefficients are stored.
+A transform profile MUST declare the meaning and encoding of its coefficients at the declared conformance level.
 
-Valid coefficient encodings for v0.1 are:
+The standard complex coefficient encodings for v0.1 are:
 
 * `"complex-real-imag"`
 * `"complex-mag-phase"`
@@ -378,9 +320,13 @@ If logarithmic or relative scaling is used, the profile MUST specify the referen
 
 A descriptive or interpretable CAS MAY use non-reconstructable coefficient encodings, but such encodings MUST NOT be marked reconstructable unless their inverse meaning is fully defined.
 
+Reconstructable profiles normally use one of the two standard complex encodings. A custom profile MAY define another encoding only if it defines a valid inverse and all parameters required for that inverse. This exception does not waive the stricter phase and complex-encoding requirements of `AGF-STFT-BASE-V0`.
+
+Examples include `magnitude-only` data for visualization. A non-complex encoding MUST declare what its values represent; consumers MUST NOT manufacture missing phase or infer a physical amplitude scale. Per-band overrides and CAS-level defaults follow §3.5. Numeric payload types and packing require a binding; these names alone do not define a binary format.
+
 ---
 
-##### 4.7 Boundary and Padding Rules
+## 4.7 Boundary and Padding Rules
 
 A reconstructable transform profile MUST define how the beginning and end of the source signal are handled.
 
@@ -404,7 +350,7 @@ Descriptive and interpretable CAS instances SHOULD declare boundary and padding 
 
 ---
 
-##### 4.8 Baseline STFT Profile: AGF-STFT-BASE-V0
+## 4.8 Baseline STFT Profile: AGF-STFT-BASE-V0
 
 AuralGlyph v0.1 defines one baseline transform profile:
 
@@ -412,20 +358,22 @@ AuralGlyph v0.1 defines one baseline transform profile:
 AGF-STFT-BASE-V0
 ```
 
-This profile is intended to provide a minimal interoperable STFT-based transform for scalar sampled signals across domains.
+This draft profile identifies the metadata needed for STFT-based scalar signals across domains. Its parameter vocabulary and reconstruction requirements are normative, but its numerical conventions are not yet complete enough to guarantee independent encoder/decoder interoperability. See the [STFT review item](../../notes/spec-review.md#r3-baseline-stft-conventions).
 
-###### 4.8.1 Profile Identity
+Until those conventions are resolved, producers claiming reconstruction MUST provide an explicit supporting profile or extension defining the unresolved behavior. The identifier `AGF-STFT-BASE-V0` alone is not sufficient evidence of reconstructability.
+
+### 4.8.1 Profile Identity
 
 ```yaml
 transform_type: "stft"
 transform_profile_id: "AGF-STFT-BASE-V0"
 ```
 
-###### 4.8.2 Required Parameters
+### 4.8.2 Required Parameters
 
 A reconstructable `AGF-STFT-BASE-V0` CAS instance MUST declare:
 
-```yaml
+```text
 sample_rate_hz: <number>
 analysis_window_length_samples: <integer>
 hop_length_samples: <integer>
@@ -446,24 +394,25 @@ The following constraints apply:
 * `analysis_window_length_samples` MUST be greater than 0.
 * `hop_length_samples` MUST be greater than 0.
 * `fft_size` MUST be greater than or equal to `analysis_window_length_samples`.
+* Window length, hop length, and FFT size MUST be integers.
 * `phase_unit` MUST be `"radians"`.
 * `window_function` MUST be declared explicitly.
 
-###### 4.8.3 Frequency Bins
+### 4.8.3 Frequency Bins
 
 For an STFT profile, frequency bins are derived from `sample_rate_hz` and `fft_size` unless overridden by an explicit band mapping.
 
 For a one-sided real-input STFT, the bin center frequency is:
 
 ```math
-f_k = \frac{k \cdot sample\_rate\_hz}{fft\_size}
+f_k = \frac{k · sample\_rate\_hz}{fft\_size}
 ```
 
 where `k` is the FFT bin index.
 
 A band MAY expose all FFT bins or a subset of bins. If a band exposes a subset, its metadata MUST define how CAS frequency indices map back to FFT bin indices or physical frequencies.
 
-###### 4.8.4 Reconstruction
+### 4.8.4 Reconstruction
 
 An `AGF-STFT-BASE-V0` CAS instance MAY be reconstructable when:
 
@@ -475,7 +424,7 @@ An `AGF-STFT-BASE-V0` CAS instance MAY be reconstructable when:
 
 A profile using `AGF-STFT-BASE-V0` MUST declare its reconstruction expectation as one of:
 
-```yaml
+```text
 reconstruction_expectation: "exact-within-numerical-precision" | "lossy-bounded" | "approximate" | "not-reconstructable"
 ```
 
@@ -483,7 +432,7 @@ If the CAS omits phase, stores only magnitudes, applies irreversible scaling, dr
 
 ---
 
-##### 4.9 Custom Transform Profiles
+## 4.9 Custom Transform Profiles
 
 A custom transform profile MAY be used when a standard profile is insufficient.
 
@@ -527,7 +476,7 @@ Consumers that do not understand a custom transform profile MUST NOT claim full 
 
 ---
 
-##### 4.10 Transform Profile Conformance
+## 4.10 Transform Profile Conformance
 
 A CAS instance conforms to its declared transform profile only if:
 
@@ -545,7 +494,7 @@ A consumer MAY still display or inspect a non-conformant CAS, but MUST NOT silen
 
 ---
 
-##### 4.11 Non-Normative Notes
+## 4.11 Non-Normative Notes
 
 Different transforms are useful for different domains:
 

@@ -1,225 +1,90 @@
 # AuralGlyph
 
-**A universal, visual-native signal format that stores audio and other waveforms as a reversible multi-band time–frequency surface.**  
-*Status: Draft / Experimental*
+**A visual-native representation for audio and other scalar sampled signals.**
 
----
+**Status:** Experimental v0.1 working draft, consolidated for review. The logical model is documented; portable payload encoding and numerical interoperability still require work.
 
-## What is AuralGlyph?
+## Start here
 
-AuralGlyph is a new kind of signal representation that unifies **audio**, **bioacoustics**, **ultrasonic/infrasonic data**, **sonar**, **vibrations**, and even **electromagnetic time-series** into a single, coherent format.
+- [Current specification](spec/auralglyph-spec.md) — authoritative entry point and reading order.
+- [Conformance checklist](spec/sections/08-conformance.md) — requirements across the model.
+- [Review register](notes/spec-review.md) — proposed clarifications, remaining gaps, and completion criteria.
+- [TODO](notes/todo.md) — current work list.
 
-Unlike traditional audio files, AuralGlyph represents signals as a **Canonical Audio Surface (CAS)** - a 3D time–frequency tensor that is:
+The versioned specification files are historical drafts. Their superseded text does not add requirements to the current specification.
 
-- **Reversible** → can reconstruct the original signal  
-- **Visual-native** → can be displayed as images or 3D surfaces  
-- **Multi-band** → supports audible, infrasonic, and ultrasonic content  
-- **Coordinate-agnostic** → can be rendered in linear, spiral, Hilbert, cylindrical, or custom views  
-- **Cross-domain** → not restricted to human hearing or audio playback systems  
+## What AuralGlyph represents
 
-AuralGlyph bridges the gap between:
+AuralGlyph organizes time–frequency data for audio, bioacoustics, sonar, vibration, seismic, biological, RF-derived, and other scalar sampled measurements. It separates the stored signal representation from its visual projection and downstream interpretation.
 
-- audio engineering  
-- bioacoustics  
-- scientific analysis  
-- signal processing  
-- machine learning  
-- digital art  
+| Layer | Responsibility |
+| --- | --- |
+| Canonical Audio Surface (CAS) | One scalar signal stream, organized by band, time frame, and bin |
+| Session | Relationships between CAS instances, including channels, timing, and sensor positions |
+| AGF container | Logical packaging of CAS instances, Sessions, profiles, provenance, and related data |
 
-Each Canonical Audio Surface (CAS) represents exactly one scalar sampled signal stream. More complex recordings containing multiple channels, sensors, or related signals are represented as collections of independent CAS instances within an AuralGlyph container.
+Stereo uses two CAS instances. Sensor arrays and multicomponent instruments use one CAS per scalar stream. Different CAS instances may use different sample rates and transforms.
 
----
+The core coefficient structure is:
 
-## Design principle (v0.1)
-
-In this version of the specification, a CAS instance is intended to represent one scalar-valued signal from one physical or logical sensor. Multi-sensor or multi-component setups SHOULD be modeled as collections of CAS instances, with their relationships defined at the container or session level.
-
-Future revisions MAY introduce aggregate types or profiles that allow vector-valued signals, without changing the semantics of existing scalar CAS instances.
-
----
-
-## Why AuralGlyph?
-
-Existing audio formats store signals as waveforms (time-domain PCM) or psychoacoustic encodings (MP3, AAC).  
-Scientific formats store raw samples but not **time–frequency structures**.  
-Image formats visualize spectrograms but cannot be reversed back to audio.
-
-**AuralGlyph is the first format that is *natively* time–frequency based.**
-
-It provides:
-
-- A unified representation for *any* sampled physical phenomenon  
-- Direct visualization without decoding  
-- Optional extended bands for non-human frequencies  
-- A consistent structure for ML models (spectrograms are already the lingua franca of audio ML)  
-- A platform for new artistic and scientific visualizations  
-
----
-
-## 🧠 Core Concept: Canonical Audio Surface (CAS)
-
-At the heart of AuralGlyph is the **CAS**, a 3D tensor:
 ```math
-C[b][t][f]
+C[b,t,f]
 ```
 
-Where:
+Each band may have a different number of bins, while all bands in one CAS share the same frame axis. Reconstructable transforms preserve the coefficient information and metadata required for inversion. Derived or descriptive data may preserve less information.
 
-- **b** - band index (infra / human / ultra / custom)  
-- **t** - time frame index  
-- **f** - frequency bin index  
-- Each value is a **complex coefficient** (magnitude + phase)
+## Explicit capability levels
 
-This single data structure is the *official* representation of the signal.  
-Any visualization or projection (spectrogram, spiral, Hilbert, etc.) is derived from CAS without altering it.
+- **Descriptive:** Supports display or inspection with limited metadata; does not claim reconstruction.
+- **Interpretable:** Describes frame timing and band meaning, including explicitly symbolic or unknown frequency mappings.
+- **Reconstructable:** Supplies the coefficients, mappings, transform parameters, and dependencies needed for its declared inverse and fidelity.
 
----
+Reconstruction is conditional on the declared profile and retained information. It cannot restore information discarded by an earlier lossy codec. The baseline STFT profile currently needs additional numerical conventions before independent implementations can reliably exchange coefficients.
 
-## 🔍 Features
+## Design principles
 
-### ✔ Multi-Band Frequency Layout
+- Each CAS represents one physical or logical scalar stream.
+- Views do not modify source coefficients. Processing produces explicitly derived data.
+- Band labels help readers; metadata defines their meaning. Audible, infrasonic, and ultrasonic bands are optional conventions.
+- Unknown metadata remains unknown. Shared container membership does not establish synchronization or location.
+- Observation time, sensor latency, integration windows, and propagation delay have distinct meanings.
+- Source localization, rendering, classification, and Scene interpretation remain downstream activities.
+- AGF v0.1 defines a logical container. It does not require a particular file archive, binary encoding, or network transport.
 
-- Infra (<20 Hz)  
-- Human audible (20 Hz – 20 kHz)  
-- Ultrasonic (20 kHz – 100+ kHz)  
-- Arbitrary custom bands  
-- Easily extended for sonar, RF, seismic, EEG/MEG, etc.
-
-### ✔ Reversible Time–Frequency Encoding
-
-- CAS contains enough information (given parameters) to reconstruct time-domain signals  
-- Inversion requirements defined explicitly in the spec  
-- Works with STFT, CQT, wavelet transforms, or future transforms
-
-### ✔ Visual-Native Format
-
-AuralGlyph is designed to look like:
-
-- A spectrogram  
-- A spiral cochleagram  
-- A “piano roll wheel”  
-- A Hilbert image  
-- A cylindrical sonar map  
-
-All without losing reversibility.
-
-### ✔ Infinite Duration Support
-
-Long signals are stored with:
-
-- time-indexed frames  
-- optional tiling  
-- optional multi-resolution overviews  
-
-The **storage** remains a clean tensor; the **display** decides how to render it.
-
-### ✔ Cross-Domain Compatibility
-
-AuralGlyph is not limited to audio.  
-It can represent:
-
-- Whale songs  
-- Bat chirps  
-- Seismic tremors  
-- Biomedical signals  
-- Machinery vibrations  
-- Radio-frequency time-series (after downconversion)  
-- Any sampled phenomenon with a frequency structure  
-
----
-
-## 🚧 Project Status
-
-AuralGlyph is currently in the **design and specification** stage.  
-This repository contains:
-
-- The evolving **AuralGlyph Specification (Draft v0.1)**
-- Design notes and discussions  
-- Planned transform profiles  
-- Placeholder sections for future reference implementations  
-
-Nothing here is final yet - expect rapid iteration and breaking changes.
-
----
-
-## 📁 Repository Structure (planned)
+## Repository contents
 
 ```text
 auralglyph-spec/
-├─ README.md # Project overview (this file)
 ├─ spec/
-│ ├─ auralglyph-spec-v0.1.md # Main draft specification
-├─ notes/
-│ ├─ design-journal.md # Rough ideas, explorations, sketches
-│ └─ concepts.md # Coordinate systems, transforms, projections
-├─ examples/
-│ ├─ example-cas-diagrams/
-│ └─ example-data/
-└─ proto/ # (Future) reference encoder/decoder experiments
+│  ├─ auralglyph-spec.md                 # Current specification, core, glossary
+│  ├─ sections/                         # Normative sections 4–8
+│  └─ auralglyph-spec-v0.1*.md           # Historical drafts
+├─ examples/                            # Informative usage and metadata fragments
+├─ notes/                               # Review register, TODO, development journals
+├─ CONTRIBUTING.md                      # DCO and Markdown/math conventions
+├─ GOVERNANCE.md                        # Stewardship and review process
+└─ LICENSE                              # CC BY 4.0
 ```
 
+There is no reference encoder, decoder, visualizer, or executable validation schema in this repository yet.
 
----
+## Examples
 
-## 🗺 Roadmap
+- [Stereo audio conversion](examples/audio-file-to-agf.md)
+- [Source-preserving spatial audio](examples/source-preserving-spatial-audio.md)
+- [Multi-station sensor network](examples/multi-station-sensor-network.md)
 
-### **Phase 1 - Core Specification**
+These examples explain intended use. They are not complete interchange files or validated reconstruction fixtures.
 
-- [x] Canonical Audio Surface formal definition  
-- [ ] Band profiles (infra/human/ultra)  
-- [ ] Transform requirements (STFT baseline)  
-- [ ] Metadata schema  
-- [ ] Container structure  
+## Next milestone
 
-### **Phase 2 - Visualization Guidelines**
+Finish the logical coefficient payload contract, precise STFT conventions, metadata binding, and complete fixtures. Review pose/clock extension boundaries and validate the result before freezing a release. Detailed scope and acceptance criteria are in the [review register](notes/spec-review.md).
 
-- [ ] Linear spectrogram view  
-- [ ] Spiral & cylindrical projections  
-- [ ] Hilbert curve view  
-- [ ] Multi-scale / overview modes  
+Physical serialization, transport, rendering, and Scene profiles are separate future work.
 
-### **Phase 3 - Reference Implementations**
+## Contributing and license
 
-- [ ] Python encoder (CAS ← audio)  
-- [ ] Python decoder (audio ← CAS)  
-- [ ] CAS visualizer (various projection modes)  
-
-### **Phase 4 - Real-World Applications**
-
-- [ ] Music encoding  
-- [ ] Bioacoustic datasets  
-- [ ] Sonar logs  
-- [ ] Machine learning integration  
-- [ ] Scientific datasets
-- [ ] Seismic data
-
----
-
-## 🤝 Contributing
-
-This is an open experimental project.  
-Ideas, questions, and feedback are welcome.  
-If you want to participate in spec design, feel free to open an issue or discussion.
-
----
-
-## 📜 License
-
-[CC-BY-4.0](LICENSE)
-
----
-
-## 🌟 Vision
-
-AuralGlyph reimagines what a “signal file format” can be:
-
-- not just for **listening**,  
-- not just for **visualization**,  
-- not just for **analysis**,  
-but a single, unified medium that encodes the *full shape* of sound and other time–frequency signals -  
-in a form that is both **human-visible** and **machine-reversible**.
-
----
+AuralGlyph uses [CC BY 4.0](LICENSE). Contributions follow [CONTRIBUTING.md](CONTRIBUTING.md), including commit sign-offs. Specification changes are reviewed under [GOVERNANCE.md](GOVERNANCE.md).
 
 ## AI-Assisted Development Notice
 

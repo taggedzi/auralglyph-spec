@@ -1,6 +1,8 @@
-#### 5. Band Profiles
+# 5. Band Profiles
 
-##### Document Summary
+Part of the [current v0.1 working specification](../auralglyph-spec.md). The core metadata conventions in §3.5 apply throughout this section.
+
+## Document Summary
 
 * **Purpose**: Defines how AuralGlyph band profiles describe the organization, labeling, frequency mapping, and reconstruction role of CAS frequency regions.
 * **Status**: Normative unless otherwise noted.
@@ -57,11 +59,11 @@ AuralGlyph does not require all CAS instances to use the same band layout. Howev
 
 ---
 
-##### 5.1 Band Identity
+## 5.1 Band Identity
 
 Each CAS band MUST declare:
 
-```yaml
+```text
 band_id: <string>
 band_label: <string>
 band_role: <string>
@@ -99,13 +101,13 @@ A consumer MUST NOT infer scientific, perceptual, or physical meaning from a ban
 
 ---
 
-##### 5.2 Band Frequency Mapping
+## 5.2 Band Frequency Mapping
 
 Each band SHOULD define how its internal frequency indices map to physical frequencies or symbolic frequency positions.
 
 For bands with known physical frequency meaning, the band SHOULD declare:
 
-```yaml
+```text
 frequency_unit: "Hz"
 frequency_min_hz: <number>
 frequency_max_hz: <number>
@@ -116,7 +118,7 @@ The `frequency_axis` object SHOULD describe how band indices map to frequency va
 
 Examples of frequency-axis metadata include:
 
-```yaml
+```text
 frequency_axis:
   mapping: "linear"
   bin_count: <integer>
@@ -124,13 +126,13 @@ frequency_axis:
   last_bin_hz: <number>
 ```
 
-```yaml
+```text
 frequency_axis:
   mapping: "explicit"
   bin_frequencies_hz: [<number>, <number>, ...]
 ```
 
-```yaml
+```text
 frequency_axis:
   mapping: "transform-derived"
   source_transform: "AGF-STFT-BASE-V0"
@@ -157,15 +159,15 @@ frequency_axis:
 
 ---
 
-##### 5.3 Band Conformance Requirements
+## 5.3 Band Conformance Requirements
 
 Band metadata requirements depend on the CAS conformance level.
 
-###### 5.3.1 Descriptive CAS Bands
+### 5.3.1 Descriptive CAS Bands
 
 A band in a descriptive CAS MUST declare at least:
 
-```yaml
+```text
 band_id: <string>
 band_label: <string>
 band_role: <string>
@@ -182,7 +184,7 @@ Example:
 ```yaml
 band_id: "approx-audible"
 band_label: "Approximate Audible Range"
-band_role: "approximate-frequency-range"
+band_role: "physical-frequency-range"
 bin_count: 512
 frequency_unit: "Hz"
 frequency_min_hz: 20
@@ -190,13 +192,13 @@ frequency_max_hz: 20000
 reconstructable: false
 ```
 
-###### 5.3.2 Interpretable CAS Bands
+### 5.3.2 Interpretable CAS Bands
 
 A band in an interpretable CAS MUST declare enough metadata for consumers to understand what the band represents.
 
 An interpretable band MUST declare at least:
 
-```yaml
+```text
 band_id: <string>
 band_label: <string>
 band_role: <string>
@@ -209,7 +211,7 @@ If `reconstructable` is `true`, the band MUST meet the reconstructable band requ
 
 If physical frequencies are known, the band SHOULD declare:
 
-```yaml
+```text
 frequency_unit: "Hz"
 frequency_min_hz: <number>
 frequency_max_hz: <number>
@@ -217,7 +219,7 @@ frequency_max_hz: <number>
 
 If physical frequencies are not known, the band MUST declare a symbolic, transform-derived, or unknown mapping.
 
-###### 5.3.3 Reconstructable CAS Bands
+### 5.3.3 Reconstructable CAS Bands
 
 A band marked:
 
@@ -229,7 +231,7 @@ MUST provide enough information to map its coefficients back into the transform 
 
 A reconstructable band MUST declare:
 
-```yaml
+```text
 band_id: <string>
 band_label: <string>
 band_role: <string>
@@ -258,7 +260,7 @@ A reconstructable band MUST NOT use approximate-only, visual-only, or symbolic-o
 
 ---
 
-##### 5.4 Standard Band Roles
+## 5.4 Standard Band Roles
 
 AuralGlyph v0.1 defines the following standard band roles:
 
@@ -308,7 +310,7 @@ Consumers MUST treat unknown or symbolic bands cautiously and MUST NOT infer phy
 
 ---
 
-##### 5.5 Standard Frequency Range Labels
+## 5.5 Standard Frequency Range Labels
 
 AuralGlyph v0.1 provides optional standard labels for common frequency ranges.
 
@@ -341,7 +343,7 @@ The labels `infrasound`, `audible`, and `ultrasound` are convenience labels only
 
 ---
 
-##### 5.6 Band Ordering
+## 5.6 Band Ordering
 
 A CAS instance MUST define the order in which bands appear in the coefficient structure.
 
@@ -362,9 +364,9 @@ A consumer MUST NOT assume that bands are ordered from low to high frequency unl
 
 ---
 
-##### 5.7 Band Indexing
+## 5.7 Band Indexing
 
-Within each band, frequency indices MUST be zero-based unless a transform profile explicitly defines otherwise.
+Within each band, CAS frequency indices MUST be zero-based. A transform profile with another native indexing convention MUST define an explicit mapping from these CAS indices to its native indices.
 
 A band-local frequency index is written:
 
@@ -402,7 +404,7 @@ Profiles MAY define more complex mappings when needed, but the mapping MUST be e
 
 ---
 
-##### 5.8 Overlapping Bands
+## 5.8 Overlapping Bands
 
 Bands MAY overlap.
 
@@ -426,11 +428,11 @@ relationship:
   source_band_id: "audible"
 ```
 
-A band that is only a view or derived summary MUST NOT be required for reconstruction unless the transform profile explicitly defines it as part of reconstruction.
+A band that is only a view or derived summary MUST NOT be required for reconstruction unless the transform profile explicitly defines it as part of reconstruction and the band meets all reconstructable-band requirements. A band marked `reconstructable: false` is never required by the inverse.
 
 ---
 
-##### 5.9 Derived and Summary Bands
+## 5.9 Derived and Summary Bands
 
 A band MAY contain derived or summary information.
 
@@ -465,7 +467,7 @@ A consumer MUST NOT treat derived or summary bands as equivalent to original tra
 
 ---
 
-##### 5.10 Band Units and Scaling
+## 5.10 Band Units and Scaling
 
 Each band SHOULD declare the units and scaling of its coefficient values.
 
@@ -476,7 +478,7 @@ coefficient_unit: "linear-amplitude"
 amplitude_scale: "linear"
 ```
 
-```yaml
+```text
 coefficient_unit: "relative-power"
 amplitude_scale: "log10"
 reference_value: <number>
@@ -493,13 +495,13 @@ A descriptive or interpretable band MAY use arbitrary or unknown units, but cons
 
 ---
 
-##### 5.11 Band Profiles
+## 5.11 Band Profiles
 
 A band profile is a reusable definition for a common band layout or band type.
 
 A band MAY declare:
 
-```yaml
+```text
 band_profile_id: <string>
 ```
 
@@ -517,6 +519,8 @@ AGF-BAND-STFT-POSITIVE-FREQUENCIES-V1
 AGF-BAND-SEISMIC-LOW-FREQUENCY-V1
 ```
 
+These identifiers illustrate naming conventions. This draft does not define standalone standard band profiles for them; a name alone supplies no additional requirements or defaults.
+
 Custom band profiles SHOULD use identifiers beginning with:
 
 ```text
@@ -529,15 +533,17 @@ Example:
 custom:taggedzi.experimental-bioacoustic-band-v0
 ```
 
-A band profile MUST NOT override explicit metadata declared on the band unless the profile defines how conflicts are resolved.
+A band profile MUST define which parameters are fixed and which are configurable. Explicit band metadata may supply configurable values, but MUST NOT contradict a fixed profile requirement. A conflict is non-conformant and MUST NOT be silently resolved by choosing one declaration.
 
 If a consumer does not understand a band profile, it MAY still interpret the band using explicit metadata present on the band.
 
 ---
 
-##### 5.12 Example Band Definitions
+## 5.12 Example Band Definitions
 
-###### 5.12.1 Descriptive Audio-Like Band
+These are band metadata fragments, not complete CAS instances. CAS defaults and required transform, timing, and payload metadata are omitted. The reconstructable fragment illustrates required mapping fields; actual reconstruction also requires a fully specified transform and available coefficients.
+
+### 5.12.1 Descriptive Audio-Like Band
 
 ```yaml
 band_id: "display-band-0"
@@ -552,7 +558,7 @@ derived: true
 reconstructable: false
 ```
 
-###### 5.12.2 Interpretable Audible Band
+### 5.12.2 Interpretable Audible Band
 
 ```yaml
 band_id: "audible"
@@ -572,13 +578,12 @@ derived: false
 reconstructable: false
 ```
 
-###### 5.12.3 Reconstructable STFT Band
+### 5.12.3 Reconstructable STFT Band
 
 ```yaml
 band_id: "stft-positive-frequencies"
 band_label: "STFT Positive Frequencies"
 band_role: "transform-derived"
-band_profile_id: "AGF-BAND-STFT-POSITIVE-FREQUENCIES-V1"
 bin_count: 1025
 frequency_unit: "Hz"
 frequency_axis:
@@ -595,7 +600,7 @@ derived: false
 reconstructable: true
 ```
 
-###### 5.12.4 Domain-Specific Seismic Band
+### 5.12.4 Domain-Specific Seismic Band
 
 ```yaml
 band_id: "seismic-low-frequency"
@@ -617,7 +622,7 @@ reconstructable: false
 
 ---
 
-##### 5.13 Band Conformance
+## 5.13 Band Conformance
 
 A CAS band conforms to its declared band metadata only if:
 
@@ -625,7 +630,7 @@ A CAS band conforms to its declared band metadata only if:
 2. `band_id` is unique within the CAS instance,
 3. `bin_count` matches the coefficient data,
 4. frequency mappings are explicit at the declared conformance level,
-5. coefficient encoding is declared,
+5. coefficient encoding is declared explicitly or through the CAS default in §3.5 (reconstructable bands require an explicit encoding),
 6. derived bands are clearly marked,
 7. reconstructable bands provide enough mapping information for inverse transformation,
 8. and unknown or approximate meanings are clearly identified.
@@ -636,7 +641,7 @@ A consumer MAY display or inspect a non-conformant band, but MUST NOT silently t
 
 ---
 
-##### 5.14 Non-Normative Notes
+## 5.14 Non-Normative Notes
 
 Bands are organizational and interpretive structures layered over CAS coefficient data.
 

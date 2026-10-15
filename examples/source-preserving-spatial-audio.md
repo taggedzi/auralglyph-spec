@@ -2,6 +2,8 @@
 
 This example is non-normative.
 
+It illustrates the [current v0.1 working specification](../spec/auralglyph-spec.md), not a complete metadata or rendering profile. A captured microphone stream may contain multiple acoustic sources; preserving that stream does not imply source separation.
+
 AuralGlyph can support **source-preserving, renderer-independent spatial audio** workflows when CAS instances are captured or authored with sufficient timing, source, and spatial metadata.
 
 Instead of storing only a final speaker mix, an AGF container may store the underlying scalar source streams as separate CAS instances, then use session metadata to describe how those streams relate in time and space.

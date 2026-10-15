@@ -2,6 +2,8 @@
 
 This example is non-normative.
 
+It follows the [current v0.1 working specification](../spec/auralglyph-spec.md). Each metadata block is an independent fragment. The blocks illustrate alternatives and must not be concatenated as though they were a complete validated container. Transform declarations, coefficient payloads, and some required object metadata are omitted.
+
 AuralGlyph can represent data from a distributed network of observation stations when each sensor output is modeled as one or more scalar CAS instances and the stations are related through session metadata.
 
 This example describes a field observation network with multiple stations collecting sound, vibration, radio-frequency, thermal, environmental, and other sampled signals.

@@ -1,3 +1,5 @@
+> **Historical draft:** This document is retained for design history. The [current v0.1 working specification](auralglyph-spec.md) supersedes it. Its requirements do not supplement the current draft.
+
 ### AuralGlyph Specification - Draft v0.1
 
 **Status:** Experimental draft
